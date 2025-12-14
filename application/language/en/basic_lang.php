@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 
 $lang['info'] = [
@@ -36,14 +36,14 @@ $lang['old_password'] = "Old Password";
  */
 $lang['not_allowed_403'] = "You are not allowed to access this page.";
 $lang['sorry_not_allowed_msg'] = "Sorry, you cannot access this section/webpage.
-Meanwhile, you may <a href='".url('/')."'>return to dashboard</a> or try using the search form.";
+Meanwhile, you may <a href='" . url('/') . "'>return to dashboard</a> or try using the search form.";
 
 $lang['home'] = "Home";
 $lang['dashboard'] = "Dashboard";
 $lang['manage_roles'] = "Manage Roles";
 $lang['manage_permissions'] = "Manage Permissions";
 $lang['backup'] = "Backup";
-$lang['location_management'] = "Location Management";
+$lang['location_management'] = "Management";
 $lang['districts'] = "Districts";
 $lang['list_all_districts'] = "List all districts";
 $lang['add_district'] = "Add District";
