@@ -70,8 +70,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </li>
   <?php endif ?>
 
-  <?php if (logged('role') == 1 || hasPermissions('districts_list') || hasPermissions('tehsils_list')): ?>
-    <?php $locationActive = ($page->menu == 'locations') || in_array($this->uri->segment(1), ['districts', 'tehsils']); ?>
+  <?php if (logged('role') == 1 || hasPermissions('districts_list') || hasPermissions('tehsils_list') || hasPermissions('schools_list')): ?>
+    <?php $locationActive = ($page->menu == 'locations') || in_array($this->uri->segment(1), ['districts', 'tehsils', 'schools']); ?>
     <li class="nav-item has-treeview <?php echo $locationActive ? 'menu-open' : '' ?>">
       <a href="#" class="nav-link <?php echo $locationActive ? 'active' : '' ?>">
         <i class="nav-icon fas fa-map-marker-alt"></i>
@@ -91,6 +91,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
           <a href="<?php echo url('tehsils') ?>" class="nav-link <?php echo ($page->submenu == 'tehsils' || $this->uri->segment(1) === 'tehsils') ? 'active' : '' ?>">
             <i class="far fa-circle nav-icon"></i>
             <p><?php echo lang('tehsils') ?></p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo url('schools') ?>" class="nav-link <?php echo ($page->submenu == 'schools' || $this->uri->segment(1) === 'schools') ? 'active' : '' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p><?php echo lang('schools') ?></p>
           </a>
         </li>
       </ul>
