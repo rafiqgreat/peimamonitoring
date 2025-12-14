@@ -1,8 +1,9 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Users_model extends MY_Model {
-	
+class Users_model extends MY_Model
+{
+
 
 	public $table = 'users';
 
@@ -16,24 +17,21 @@ class Users_model extends MY_Model {
 		$query = $this->db->get($this->table);
 
 		// validate user
-		if(!empty($query) && $query->num_rows() > 0){
+		if (!empty($query) && $query->num_rows() > 0) {
 
 			// checks the password
-			if($query->row()->password == hash( "sha256", $data['password'] )){
+			if ($query->row()->password == hash("sha256", $data['password'])) {
 
-				if ($query->row()->status==='1')
+				if ($query->row()->status === '1')
 					return 'valid'; // if valid password and username and allowed
 				else
 					return 'not_allowed';
-
-			}
-			else
+			} else
 				return 'invalid_password'; // if invalid password
 
 		}
 
 		return false;
-
 	}
 
 	public function login($row, $remember = false)
@@ -41,9 +39,9 @@ class Users_model extends MY_Model {
 		$time = time();
 
 		// encypting userid and password with current time $time
-		$login_token = sha1($row->id.$row->password.$time);
+		$login_token = sha1($row->id . $row->password . $time);
 
-		if($remember===false){
+		if ($remember === false) {
 			$array = [
 				'login' => true,
 				// saving encrypted userid and password as token in session
@@ -53,29 +51,27 @@ class Users_model extends MY_Model {
 					'time' => $time,
 				]
 			];
-			$this->session->set_userdata( $array );
-		}else{
+			$this->session->set_userdata($array);
+		} else {
 
 			$data = [
 				'id' => $row->id,
 				'time' => time(),
 			];
 			$expiry = strtotime('+7 days');
-			set_cookie( 'login', true, $expiry );
-			set_cookie( 'logged', json_encode($data), $expiry );
-			set_cookie( 'login_token', $login_token, $expiry );
-
+			set_cookie('login', true, $expiry);
+			set_cookie('logged', json_encode($data), $expiry);
+			set_cookie('login_token', $login_token, $expiry);
 		}
 
-		setUserlang('es');
+		setUserlang('en');
 
 
 		$this->update($row->id, [
 			'last_login' => date('Y-m-d H:m:i')
 		]);
 
-		$this->activity_model->add($row->name.' ('.$row->username.') Logged in', $row->id);
-
+		$this->activity_model->add($row->name . ' (' . $row->username . ') Logged in', $row->id);
 	}
 
 	public function logout()
@@ -88,7 +84,7 @@ class Users_model extends MY_Model {
 		delete_cookie('logged');
 		delete_cookie('login_token');
 	}
-	
+
 
 	public function resetPassword($data)
 	{
@@ -98,21 +94,22 @@ class Users_model extends MY_Model {
 
 		$user = $this->db->get_where($this->table)->row();
 
-		if(!empty($user)){ }else{
+		if (!empty($user)) {
+		} else {
 			return 'invalid';
 		}
 
-		$reset_token	=	password_hash((time().$user->id), PASSWORD_BCRYPT);
+		$reset_token	=	password_hash((time() . $user->id), PASSWORD_BCRYPT);
 
 		$this->db->where('id', $user->id);
 		$this->db->update($this->table, compact('reset_token'));
 
-		$this->email->from(setting('company_email'), setting('company_name') );
+		$this->email->from(setting('company_email'), setting('company_name'));
 		$this->email->to($user->email);
 
-		$this->email->subject('Reset Your Account Password | ' . setting('company_name') );
+		$this->email->subject('Reset Your Account Password | ' . setting('company_name'));
 
-		$reset_link = url('login/new_password?token='.$reset_token);
+		$reset_link = url('login/new_password?token=' . $reset_token);
 
 		$data = getEmailShortCodes();
 		$data['user_id'] = $user->id;
@@ -123,30 +120,32 @@ class Users_model extends MY_Model {
 
 		$html = $this->parser->parse('templates/email/reset', $data, true);
 
-		$this->email->message( $html );
+		$this->email->message($html);
 
 		$this->email->send();
 
 		return $user->email;
-
 	}
 
-	public function appendToSelectStr() {
-			return NULL;
+	public function appendToSelectStr()
+	{
+		return NULL;
 	}
 
-	public function fromTableStr() {
+	public function fromTableStr()
+	{
 		return 'users';
 	}
 
-	public function joinArray(){
+	public function joinArray()
+	{
 		return NULL;
 	}
 
-	public function whereClauseArray(){
+	public function whereClauseArray()
+	{
 		return NULL;
 	}
-
 }
 
 /* End of file Users_model.php */
