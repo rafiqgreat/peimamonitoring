@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class School_visits extends MY_Controller {
+class School_visits extends MY_Controller
+{
 
 	private $permissions = [
 		'school_visits_list' => 'School Visits List',
@@ -56,10 +57,21 @@ class School_visits extends MY_Controller {
 		ifPermissions($permission);
 	}
 
+	private function is_school_head()
+	{
+		return (int) logged('role') === 3;
+	}
+
+	private function user_school_id()
+	{
+		$schoolId = logged('school_id');
+		return !empty($schoolId) ? (int) $schoolId : 0;
+	}
+
 	private function allowed_schools()
 	{
-		if ((int) logged('role') === 3 && !empty(logged('school_id'))) {
-			return $this->schools_model->getByWhere(['school_id' => logged('school_id')]);
+		if ($this->is_school_head() && $this->user_school_id() > 0) {
+			return $this->schools_model->getByWhere(['school_id' => $this->user_school_id()]);
 		}
 
 		return $this->schools_model->get();
@@ -67,8 +79,8 @@ class School_visits extends MY_Controller {
 
 	private function find_allowed_school($school_id)
 	{
-		if ((int) logged('role') === 3) {
-			return ((int) logged('school_id') === (int) $school_id);
+		if ($this->is_school_head()) {
+			return ($this->user_school_id() === (int) $school_id);
 		}
 		return true;
 	}
@@ -81,9 +93,11 @@ class School_visits extends MY_Controller {
 		$this->db->from('school_visit_reports');
 		$this->db->join('schools', 'schools.school_id = school_visit_reports.school_id', 'left');
 		$this->db->join('users', 'users.id = school_visit_reports.visited_by', 'left');
+		//print_r(logged);
+		die(logged('school_id'));
 
-		if ((int) logged('role') === 3 && !empty(logged('school_id'))) {
-			$this->db->where('school_visit_reports.school_id', (int) logged('school_id'));
+		if ($this->is_school_head() && $this->user_school_id() > 0) {
+			$this->db->where('school_visit_reports.school_id', $this->user_school_id());
 		}
 
 		$this->db->order_by('visit_date', 'desc');
@@ -114,8 +128,8 @@ class School_visits extends MY_Controller {
 
 		$school_id = post('school_id');
 
-		if ((int) logged('role') === 3 && !empty(logged('school_id'))) {
-			$school_id = logged('school_id');
+		if ($this->is_school_head() && $this->user_school_id() > 0) {
+			$school_id = $this->user_school_id();
 		}
 
 		if (empty($school_id) || !$this->find_allowed_school($school_id)) {
@@ -142,11 +156,11 @@ class School_visits extends MY_Controller {
 
 		$id = $this->school_visit_reports_model->create($data);
 
-		$this->activity_model->add("School visit #$id Created by User: #".logged('id'), logged('id'));
+		$this->activity_model->add("School visit #$id Created by User: #" . logged('id'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'School visit report created successfully');
-		
+
 		redirect('school_visits');
 	}
 
@@ -211,11 +225,11 @@ class School_visits extends MY_Controller {
 
 		$this->school_visit_reports_model->update($id, $data);
 
-		$this->activity_model->add("School visit #$id Updated by User: #".logged('id'), logged('id'));
+		$this->activity_model->add("School visit #$id Updated by User: #" . logged('id'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'School visit report updated successfully');
-		
+
 		redirect('school_visits');
 	}
 
@@ -229,8 +243,8 @@ class School_visits extends MY_Controller {
 		$this->db->join('users', 'users.id = school_visit_reports.visited_by', 'left');
 		$this->db->where('school_visit_reports.id', $id);
 
-		if ((int) logged('role') === 3 && !empty(logged('school_id'))) {
-			$this->db->where('school_visit_reports.school_id', (int) logged('school_id'));
+		if ($this->is_school_head() && $this->user_school_id() > 0) {
+			$this->db->where('school_visit_reports.school_id', $this->user_school_id());
 		}
 
 		$visit = $this->db->get()->row();
@@ -261,14 +275,13 @@ class School_visits extends MY_Controller {
 
 		$this->school_visit_reports_model->delete($id);
 
-		$this->activity_model->add("School visit #$id Deleted by User: #".logged('id'), logged('id'));
+		$this->activity_model->add("School visit #$id Deleted by User: #" . logged('id'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'School visit report deleted successfully');
-		
+
 		redirect('school_visits');
 	}
-
 }
 
 /* End of file School_visits.php */
