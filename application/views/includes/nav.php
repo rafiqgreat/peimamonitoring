@@ -70,10 +70,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </li>
   <?php endif ?>
 
-  <?php if (logged('role') == 1 || hasPermissions('districts_list')): ?>
-    <?php $districtsActive = ($page->menu == 'locations') || ($this->uri->segment(1) === 'districts'); ?>
-    <li class="nav-item has-treeview <?php echo $districtsActive ? 'menu-open' : '' ?>">
-      <a href="#" class="nav-link <?php echo $districtsActive ? 'active' : '' ?>">
+  <?php if (logged('role') == 1 || hasPermissions('districts_list') || hasPermissions('tehsils_list')): ?>
+    <?php $locationActive = ($page->menu == 'locations') || in_array($this->uri->segment(1), ['districts', 'tehsils']); ?>
+    <li class="nav-item has-treeview <?php echo $locationActive ? 'menu-open' : '' ?>">
+      <a href="#" class="nav-link <?php echo $locationActive ? 'active' : '' ?>">
         <i class="nav-icon fas fa-map-marker-alt"></i>
         <p>
           <?php echo lang('location_management') ?>
@@ -85,6 +85,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
           <a href="<?php echo url('districts') ?>" class="nav-link <?php echo ($page->submenu == 'districts' || $this->uri->segment(1) === 'districts') ? 'active' : '' ?>">
             <i class="far fa-circle nav-icon"></i>
             <p><?php echo lang('districts') ?></p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo url('tehsils') ?>" class="nav-link <?php echo ($page->submenu == 'tehsils' || $this->uri->segment(1) === 'tehsils') ? 'active' : '' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p><?php echo lang('tehsils') ?></p>
           </a>
         </li>
       </ul>
