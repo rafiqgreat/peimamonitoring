@@ -70,6 +70,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </li>
   <?php endif ?>
 
+  <?php if (logged('role') == 1 || hasPermissions('districts_list')): ?>
+    <li class="nav-item has-treeview <?php echo ($page->menu=='locations')?'menu-open':'' ?>">
+      <a href="#" class="nav-link <?php echo ($page->menu=='locations')?'active':'' ?>">
+        <i class="nav-icon fas fa-map-marker-alt"></i>
+        <p>
+          <?php echo lang('location_management') ?>
+          <i class="right fas fa-angle-left"></i>
+        </p>
+      </a>
+      <ul class="nav nav-treeview">
+        <li class="nav-item">
+          <a href="<?php echo url('districts') ?>" class="nav-link <?php echo ($page->submenu=='districts')?'active':'' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p><?php echo lang('districts') ?></p>
+          </a>
+        </li>
+      </ul>
+    </li>
+  <?php endif ?>
+
   <?php if ( hasPermissions('company_settings') ): ?>
   <li class="nav-item has-treeview <?php echo ($page->menu=='settings')?'menu-open':'' ?>">
     <a href="#" class="nav-link  <?php echo ($page->menu=='settings')?'active':'' ?>">

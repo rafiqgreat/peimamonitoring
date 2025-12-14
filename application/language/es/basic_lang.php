@@ -21,6 +21,20 @@ $lang['dashboard'] = "Dashboard";
 $lang['manage_roles'] = "Manage Roles";
 $lang['manage_permissions'] = "Manage Permissions";
 $lang['backup'] = "Backup";
+$lang['location_management'] = "Location Management";
+$lang['districts'] = "Districts";
+$lang['list_all_districts'] = "List all districts";
+$lang['add_district'] = "Add District";
+$lang['edit_district'] = "Edit District";
+$lang['district_code'] = "District Code";
+$lang['district_name_en'] = "District Name (English)";
+$lang['district_name_ur'] = "District Name (Urdu)";
+$lang['district_sort'] = "Sort Order";
+$lang['district_status'] = "Status";
+$lang['district_state_id'] = "State ID";
+$lang['delete_district'] = "Delete District";
+$lang['delete_district_confirm'] = "Do you really want to delete this district?";
+$lang['optional'] = "Optional";
 $lang['settings'] = "Settings";
 $lang['general_setings'] = "General Settings";
 $lang['company_setings'] = "Company Settings";
@@ -275,6 +289,5 @@ $lang['edit'] = "Edit";
 $lang['settings_email_template'] = "Template";
 $lang['settings_timezone'] = "Timezone";
 $lang['settings_timezone'] = "Timezone";
-
 
 
