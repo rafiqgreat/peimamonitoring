@@ -1,12 +1,12 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 ?>
 
 <ul class="nav nav-pills nav-sidebar flex-column nav-legacy" data-widget="treeview" role="menu" data-accordion="false">
 
 
-<li class="nav-item">
-    <a href="<?php echo url('dashboard') ?>" class="nav-link <?php echo ($page->menu=='dashboard')?'active':'' ?>">
+  <li class="nav-item">
+    <a href="<?php echo url('dashboard') ?>" class="nav-link <?php echo ($page->menu == 'dashboard') ? 'active' : '' ?>">
       <i class="nav-icon fas fa-tachometer-alt"></i>
       <p>
         <?php echo lang('dashboard') ?>
@@ -16,10 +16,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
   <?php if (hasPermissions('users_list')): ?>
     <li class="nav-item">
-      <a href="<?php echo url('users') ?>" class="nav-link <?php echo ($page->menu=='users')?'active':'' ?>">
+      <a href="<?php echo url('users') ?>" class="nav-link <?php echo ($page->menu == 'users') ? 'active' : '' ?>">
         <i class="nav-icon fas fa-user"></i>
         <p>
-        <?php echo lang('users') ?>
+          <?php echo lang('users') ?>
         </p>
       </a>
     </li>
@@ -27,10 +27,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
   <?php if (hasPermissions('activity_log_list')): ?>
     <li class="nav-item">
-      <a href="<?php echo url('activity_logs') ?>" class="nav-link <?php echo ($page->menu=='activity_logs')?'active':'' ?>">
+      <a href="<?php echo url('activity_logs') ?>" class="nav-link <?php echo ($page->menu == 'activity_logs') ? 'active' : '' ?>">
         <i class="nav-icon fas fa-history"></i>
         <p>
-        <?php echo lang('activity_logs') ?>
+          <?php echo lang('activity_logs') ?>
         </p>
       </a>
     </li>
@@ -38,10 +38,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
   <?php if (hasPermissions('roles_list')): ?>
     <li class="nav-item">
-      <a href="<?php echo url('roles') ?>" class="nav-link <?php echo ($page->menu=='roles')?'active':'' ?>">
+      <a href="<?php echo url('roles') ?>" class="nav-link <?php echo ($page->menu == 'roles') ? 'active' : '' ?>">
         <i class="nav-icon fas fa-lock"></i>
         <p>
-        <?php echo lang('manage_roles') ?>
+          <?php echo lang('manage_roles') ?>
         </p>
       </a>
     </li>
@@ -49,10 +49,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
   <?php if (hasPermissions('permissions_list')): ?>
     <li class="nav-item">
-      <a href="<?php echo url('permissions') ?>" class="nav-link <?php echo ($page->menu=='permissions')?'active':'' ?>">
+      <a href="<?php echo url('permissions') ?>" class="nav-link <?php echo ($page->menu == 'permissions') ? 'active' : '' ?>">
         <i class="nav-icon fas fa-user"></i>
         <p>
-        <?php echo lang('manage_permissions') ?>
+          <?php echo lang('manage_permissions') ?>
         </p>
       </a>
     </li>
@@ -61,18 +61,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
   <?php if (hasPermissions('backup_db')): ?>
     <li class="nav-item">
-      <a href="<?php echo url('backup') ?>" class="nav-link <?php echo ($page->menu=='backup')?'active':'' ?>">
+      <a href="<?php echo url('backup') ?>" class="nav-link <?php echo ($page->menu == 'backup') ? 'active' : '' ?>">
         <i class="nav-icon fas fa-user"></i>
         <p>
-        <?php echo lang('backup') ?>
+          <?php echo lang('backup') ?>
         </p>
       </a>
     </li>
   <?php endif ?>
 
   <?php if (logged('role') == 1 || hasPermissions('districts_list')): ?>
-    <li class="nav-item has-treeview <?php echo ($page->menu=='locations')?'menu-open':'' ?>">
-      <a href="#" class="nav-link <?php echo ($page->menu=='locations')?'active':'' ?>">
+    <?php $districtsActive = ($page->menu == 'locations') || ($this->uri->segment(1) === 'districts'); ?>
+    <li class="nav-item has-treeview <?php echo $districtsActive ? 'menu-open' : '' ?>">
+      <a href="#" class="nav-link <?php echo $districtsActive ? 'active' : '' ?>">
         <i class="nav-icon fas fa-map-marker-alt"></i>
         <p>
           <?php echo lang('location_management') ?>
@@ -81,7 +82,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a href="<?php echo url('districts') ?>" class="nav-link <?php echo ($page->submenu=='districts')?'active':'' ?>">
+          <a href="<?php echo url('districts') ?>" class="nav-link <?php echo ($page->submenu == 'districts' || $this->uri->segment(1) === 'districts') ? 'active' : '' ?>">
             <i class="far fa-circle nav-icon"></i>
             <p><?php echo lang('districts') ?></p>
           </a>
@@ -90,46 +91,49 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </li>
   <?php endif ?>
 
-  <?php if ( hasPermissions('company_settings') ): ?>
-  <li class="nav-item has-treeview <?php echo ($page->menu=='settings')?'menu-open':'' ?>">
-    <a href="#" class="nav-link  <?php echo ($page->menu=='settings')?'active':'' ?>">
-      <i class="nav-icon fas fa-cog"></i>
-      <p>
-      <?php echo lang('settings') ?>
-        <i class="right fas fa-angle-left"></i>
-      </p>
-    </a>
-    <ul class="nav nav-treeview">
-    <li class="nav-item">
-        <a href="<?php echo url('settings/general') ?>" class="nav-link <?php echo ($page->submenu=='general')?'active':'' ?>">
-          <i class="far fa-circle nav-icon"></i> <p> <?php echo lang('general_setings') ?> </p>
-        </a>
-      </li>
+  <?php if (hasPermissions('company_settings')): ?>
+    <li class="nav-item has-treeview <?php echo ($page->menu == 'settings') ? 'menu-open' : '' ?>">
+      <a href="#" class="nav-link  <?php echo ($page->menu == 'settings') ? 'active' : '' ?>">
+        <i class="nav-icon fas fa-cog"></i>
+        <p>
+          <?php echo lang('settings') ?>
+          <i class="right fas fa-angle-left"></i>
+        </p>
+      </a>
+      <ul class="nav nav-treeview">
+        <li class="nav-item">
+          <a href="<?php echo url('settings/general') ?>" class="nav-link <?php echo ($page->submenu == 'general') ? 'active' : '' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p> <?php echo lang('general_setings') ?> </p>
+          </a>
+        </li>
 
-      <li class="nav-item">
-        <a href="<?php echo url('settings/company') ?>" class="nav-link <?php echo ($page->submenu=='company')?'active':'' ?>">
-          <i class="far fa-circle nav-icon"></i> <p>  <?php echo lang('company_setings') ?> </p>
-        </a>
-      </li>
+        <li class="nav-item">
+          <a href="<?php echo url('settings/company') ?>" class="nav-link <?php echo ($page->submenu == 'company') ? 'active' : '' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p> <?php echo lang('company_setings') ?> </p>
+          </a>
+        </li>
 
-      <li class="nav-item">
-        <a href="<?php echo url('settings/email_templates') ?>" class="nav-link <?php echo ($page->submenu=='email_templates')?'active':'' ?>">
-          <i class="far fa-circle nav-icon"></i> <p> <?php echo lang('manage_email_template') ?></p>
-        </a>
-      </li>
-    </ul>
-  </li>
+        <li class="nav-item">
+          <a href="<?php echo url('settings/email_templates') ?>" class="nav-link <?php echo ($page->submenu == 'email_templates') ? 'active' : '' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p> <?php echo lang('manage_email_template') ?></p>
+          </a>
+        </li>
+      </ul>
+    </li>
   <?php endif ?>
 
 
-  <li class="nav-header"><strong>  <?php echo lang('ci_examples') ?>  </strong> &nbsp;
-  <span class="right badge badge-primary">New</span>
+  <li class="nav-header"><strong> <?php echo lang('ci_examples') ?> </strong> &nbsp;
+    <span class="right badge badge-primary">New</span>
   </li>
   <li class="nav-item has-treeview">
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-tachometer-alt"></i>
       <p>
-      <?php echo lang('datatables') ?>
+        <?php echo lang('datatables') ?>
         <i class="right fas fa-angle-left"></i>
       </p>
     </a>
@@ -152,7 +156,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="<?php echo url('adminlte/ci_examples/form_validation') ?>" class="nav-link">
       <i class="nav-icon fas fa-table"></i>
       <p>
-      <?php echo lang('form_validation') ?>
+        <?php echo lang('form_validation') ?>
       </p>
     </a>
   </li>
@@ -160,7 +164,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="<?php echo url('adminlte/ci_examples/file_uploads') ?>" class="nav-link">
       <i class="nav-icon fas fa-upload"></i>
       <p>
-      <?php echo lang('file_upload') ?>
+        <?php echo lang('file_upload') ?>
       </p>
     </a>
   </li>
@@ -168,7 +172,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="<?php echo url('adminlte/ci_examples/multi_file_uploads') ?>" class="nav-link">
       <i class="nav-icon fas fa-file-upload"></i>
       <p>
-      <?php echo lang('multi_file_upload') ?>
+        <?php echo lang('multi_file_upload') ?>
       </p>
     </a>
   </li>
@@ -209,7 +213,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="<?php echo url('adminlte/main/widgets') ?>" class="nav-link">
       <i class="nav-icon fas fa-th"></i>
       <p>
-      <?php echo lang('widgets') ?>
+        <?php echo lang('widgets') ?>
       </p>
     </a>
   </li>
@@ -217,7 +221,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-copy"></i>
       <p>
-      <?php echo lang('layout_options') ?>
+        <?php echo lang('layout_options') ?>
         <i class="fas fa-angle-left right"></i>
         <span class="badge badge-info right">6</span>
       </p>
@@ -271,7 +275,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-chart-pie"></i>
       <p>
-      <?php echo lang('charts') ?>
+        <?php echo lang('charts') ?>
         <i class="right fas fa-angle-left"></i>
       </p>
     </a>
@@ -300,7 +304,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-tree"></i>
       <p>
-      <?php echo lang('ui_elements') ?>
+        <?php echo lang('ui_elements') ?>
         <i class="fas fa-angle-left right"></i>
       </p>
     </a>
@@ -359,7 +363,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-edit"></i>
       <p>
-      <?php echo lang('forms') ?>
+        <?php echo lang('forms') ?>
         <i class="fas fa-angle-left right"></i>
       </p>
     </a>
@@ -394,7 +398,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-table"></i>
       <p>
-      <?php echo lang('tables') ?>
+        <?php echo lang('tables') ?>
         <i class="fas fa-angle-left right"></i>
       </p>
     </a>
@@ -424,7 +428,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="<?php echo url('adminlte/main/calendar'); ?>" class="nav-link">
       <i class="nav-icon far fa-calendar-alt"></i>
       <p>
-      <?php echo lang('calendar') ?>
+        <?php echo lang('calendar') ?>
         <span class="badge badge-info right">2</span>
       </p>
     </a>
@@ -433,7 +437,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="<?php echo url('adminlte/main/gallery'); ?>" class="nav-link">
       <i class="nav-icon far fa-image"></i>
       <p>
-      <?php echo lang('gallery') ?>
+        <?php echo lang('gallery') ?>
       </p>
     </a>
   </li>
@@ -441,7 +445,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon far fa-envelope"></i>
       <p>
-      <?php echo lang('mailbox') ?>
+        <?php echo lang('mailbox') ?>
         <i class="fas fa-angle-left right"></i>
       </p>
     </a>
@@ -470,7 +474,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon fas fa-book"></i>
       <p>
-      <?php echo lang('pages') ?>
+        <?php echo lang('pages') ?>
         <i class="fas fa-angle-left right"></i>
       </p>
     </a>
@@ -529,7 +533,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <a href="#" class="nav-link">
       <i class="nav-icon far fa-plus-square"></i>
       <p>
-      <?php echo lang('extras') ?>
+        <?php echo lang('extras') ?>
         <i class="fas fa-angle-left right"></i>
       </p>
     </a>
