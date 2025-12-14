@@ -283,6 +283,9 @@ $lang['user_username_take'] = "Username Already taken";
 $lang['user_password'] = "Password";
 $lang['user_password_confirm'] = "Confirm Password";
 $lang['user_password_leave_blank'] = "Leave Blank to remain unchanged !";
+$lang['user_school'] = "School";
+$lang['user_select_school'] = "Select School";
+$lang['user_school_only_role3'] = "Only required when role is School Head (Role ID 3).";
 
 $lang['user_other_details'] = "Other Details";
 $lang['user_address'] = "Address";

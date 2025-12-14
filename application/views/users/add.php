@@ -110,6 +110,19 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             </select>
           </div>
 
+          <div class="form-group" id="formClient-School-Wrapper" style="display: none;">
+            <label for="formClient-School"><?php echo lang('user_school') ?></label>
+            <select name="school_id" id="formClient-School" class="form-control select2">
+              <option value=""><?php echo lang('user_select_school') ?></option>
+              <?php if (!empty($schools)): ?>
+                <?php foreach ($schools as $school): ?>
+                  <option value="<?php echo $school->school_id ?>"><?php echo $school->school_name ?></option>
+                <?php endforeach ?>
+              <?php endif ?>
+            </select>
+            <small class="form-text text-muted"><?php echo lang('user_school_only_role3') ?></small>
+          </div>
+
           <div class="form-group">
             <label for="formClient-Status"><?php echo lang('user_status') ?></label>
             <select name="status" id="formClient-Status" class="form-control">
@@ -173,8 +186,24 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
       //Initialize Select2 Elements
     $('.select2').select2()
+    toggleSchoolSelect($('#formClient-Role').val());
+    $('#formClient-Role').on('change', function() {
+      toggleSchoolSelect($(this).val());
+    });
 
   })
+
+  function toggleSchoolSelect(roleVal){
+    var show = parseInt(roleVal, 10) === 3;
+    if(show){
+      $('#formClient-School-Wrapper').show();
+      $('#formClient-School').attr('required', true);
+    }else{
+      $('#formClient-School-Wrapper').hide();
+      $('#formClient-School').removeAttr('required');
+      $('#formClient-School').val(null).trigger('change');
+    }
+  }
 
   function previewImage(input, previewDom) {
 
@@ -205,4 +234,3 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 </script>
 
 <?php include viewPath('includes/footer'); ?>
-

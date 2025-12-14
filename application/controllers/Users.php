@@ -8,6 +8,7 @@ class Users extends MY_Controller {
 		parent::__construct();
 		$this->page_data['page']->title = 'Users Management';
 		$this->page_data['page']->menu = 'users';
+		$this->load->model('schools_model');
 	}
 
 	public function index()
@@ -20,6 +21,7 @@ class Users extends MY_Controller {
 	public function add()
 	{
 		ifPermissions('users_add');
+		$this->page_data['schools'] = $this->schools_model->get();
 		$this->load->view('users/add', $this->page_data);
 	}
 
@@ -36,6 +38,7 @@ class Users extends MY_Controller {
 			'phone' => post('phone'),
 			'address' => post('address'),
 			'status' => (int) post('status'),
+			'school_id' => (int) post('role') === 3 && post('school_id') !== '' ? (int) post('school_id') : null,
 			'password' => hash( "sha256", post('password') ),
 		]);
 
@@ -91,6 +94,7 @@ class Users extends MY_Controller {
 		ifPermissions('users_edit');
 
 		$this->page_data['User'] = $this->users_model->getById($id);
+		$this->page_data['schools'] = $this->schools_model->get();
 		$this->load->view('users/edit', $this->page_data);
 
 	}
@@ -111,6 +115,7 @@ class Users extends MY_Controller {
 			'phone' => post('phone'),
 			'address' => post('address'),
 		];
+		$data['school_id'] = (int) post('role') === 3 && post('school_id') !== '' ? (int) post('school_id') : null;
 
 		$password = post('password');
 
