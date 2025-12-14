@@ -21,7 +21,7 @@ class School_visits extends MY_Controller {
 		$this->load->model('schools_model');
 
 		$this->page_data['page']->title = 'School Visit Reports';
-		$this->page_data['page']->menu = 'locations';
+		$this->page_data['page']->menu = 'school_visits';
 		$this->page_data['page']->submenu = 'school_visits';
 
 		$this->ensure_permissions();
