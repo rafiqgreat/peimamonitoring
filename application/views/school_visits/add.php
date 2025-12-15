@@ -35,7 +35,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
     </div>
 
-    <?php echo form_open('school_visits/save', ['class' => 'form-validate']); ?>
+    <?php echo form_open_multipart('school_visits/save', ['class' => 'form-validate']); ?>
     <div class="card-body">
 
       <div class="alert alert-info">
@@ -72,7 +72,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                       data-school_contact_mobile="<?php echo htmlspecialchars($school->school_contact_mobile, ENT_QUOTES, 'UTF-8'); ?>"
                       data-district_name_en="<?php echo htmlspecialchars($school->district_name_en, ENT_QUOTES, 'UTF-8'); ?>"
                       data-tehsil_name_en="<?php echo htmlspecialchars($school->tehsil_name_en, ENT_QUOTES, 'UTF-8'); ?>"
-                        <?php echo ((int) logged('school_id') === (int) $school->school_id) ? 'selected' : '' ?>>
+                      <?php echo ((int) logged('school_id') === (int) $school->school_id) ? 'selected' : '' ?>>
                       <?php echo trim($school->school_code) !== '' ? $school->school_code . ' - ' . $school->school_name : $school->school_name ?>
                     </option>
                   <?php endforeach ?>
@@ -82,13 +82,19 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 <?php endif ?>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-group">
                 <label for="visit-date"><?php echo lang('visit_date') ?></label>
-                <input type="date" class="form-control" name="visit_date" id="visit-date" value="<?php echo date('Y-m-d') ?>" required />
+                <input type="date" class="form-control" name="visit_date" id="visit-date" value="<?php echo date('Y-m-d') ?>" readonly />
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="visit-time"><?php echo lang('visit_time') ?></label>
+                <input type="time" class="form-control" id="visit-time" value="<?php echo date('H:i') ?>" readonly />
+              </div>
+            </div>
+            <div class="col-md-2">
               <div class="form-group">
                 <label for="visit-status"><?php echo lang('school_status') ?></label>
                 <select name="is_open" id="visit-status" class="form-control">
@@ -104,7 +110,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <div class="col-md-6">
               <div class="form-group">
                 <label for="visit-district"><?php echo lang('school_district') ?></label>
-                <select id="visit-district" class="form-control select2">
+                <select id="visit-district" class="form-control select2" disabled>
                   <option value=""><?php echo lang('select_school') ?></option>
                   <?php foreach ($districts as $district): ?>
                     <option value="<?php echo $district->district_id ?>"><?php echo $district->district_name_en ?></option>
@@ -115,7 +121,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <div class="col-md-6">
               <div class="form-group">
                 <label for="visit-tehsil"><?php echo lang('school_tehsil') ?></label>
-                <select id="visit-tehsil" class="form-control select2">
+                <select id="visit-tehsil" class="form-control select2" disabled>
                   <option value=""><?php echo lang('select_school') ?></option>
                   <?php foreach ($tehsils as $tehsil): ?>
                     <option value="<?php echo $tehsil->tehsil_id ?>" data-district-id="<?php echo $tehsil->tehsil_district_id ?>"><?php echo $tehsil->tehsil_name_en ?></option>
@@ -151,6 +157,67 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
       <div class="card card-outline card-secondary mb-3">
         <div class="card-header">
+          <h3 class="card-title">School Head Detail</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="head-name">Head Name</label>
+                <input type="text" class="form-control" name="head_name" id="head-name" />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="head-gender">Gender</label>
+                <select name="head_gender" id="head-gender" class="form-control">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="head-contact">Head Contact</label>
+                <input type="text" class="form-control" name="head_contact" id="head-contact" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="head-whatsapp">Whatsapp No</label>
+                <input type="text" class="form-control" name="head_whatsapp" id="head-whatsapp" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="head-email">Head Email</label>
+                <input type="email" class="form-control" name="head_email" id="head-email" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Head Photo (optional)</label>
+                <input type="file" name="head_photo" accept="image/*" class="form-control-file" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>School Gate Photo (optional)</label>
+                <input type="file" name="gate_photo" accept="image/*" class="form-control-file" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card card-outline card-secondary mb-3">
+        <div class="card-header">
           <h3 class="card-title">Compliance Requirements</h3>
         </div>
         <div class="card-body">
@@ -162,6 +229,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_boundary_wall_main_gate" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -171,6 +239,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_drinking_water_available" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -183,6 +252,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_washrooms_tiled_floors" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -192,6 +262,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_washrooms_handwashing_tap" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -204,6 +275,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_washrooms_soap_available" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -213,6 +285,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_washrooms_clean_daily" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -225,6 +298,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_classrooms_repaired_painted" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -234,6 +308,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_classrooms_board_available" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -246,6 +321,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_classrooms_ventilation_safety" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -255,6 +331,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_classrooms_electricity_working" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -267,6 +344,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_classrooms_furniture_sufficient" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -276,6 +354,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_classrooms_no_broken_material" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -288,6 +367,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_school_grounds_clean" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -297,6 +377,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_school_grounds_plants" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -309,6 +390,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_school_grounds_pathways" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
             <div class="col-md-6">
@@ -318,6 +400,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_secondary_ecc_room" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -330,6 +413,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
+                <input type="file" name="photo_secondary_swings_slides" accept="image/*" class="form-control-file mt-1" />
               </div>
             </div>
           </div>
@@ -338,44 +422,67 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
       <div class="card card-outline card-secondary mb-3">
         <div class="card-header">
-          <h3 class="card-title">Infrastructure &amp; Resources</h3>
+          <h3 class="card-title">Teachers Inspection</h3>
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group">
-                <label for="main-gate"><?php echo lang('main_gate_condition') ?></label>
-                <select name="main_gate_condition" id="main-gate" class="form-control">
-                  <option value="1"><?php echo lang('condition_good') ?></option>
-                  <option value="0"><?php echo lang('condition_poor') ?></option>
-                </select>
+                <label for="teachers-sis">Teachers as per SIS</label>
+                <input type="number" class="form-control" name="teachers_as_per_sis" id="teachers-sis" min="0" />
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group">
-                <label for="classrooms-count"><?php echo lang('classrooms_count') ?></label>
-                <input type="number" class="form-control" name="classrooms_count" id="classrooms-count" min="0" />
+                <label for="teachers-register">Teachers as per Register</label>
+                <input type="number" class="form-control" name="teachers_as_per_register" id="teachers-register" min="0" />
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group">
-                <label for="washrooms-count"><?php echo lang('washrooms_count') ?></label>
-                <input type="number" class="form-control" name="washrooms_count" id="washrooms-count" min="0" />
+                <label for="teachers-present">Teachers Present</label>
+                <input type="number" class="form-control" name="teachers_present" id="teachers-present" min="0" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="teachers-gap">Teachers Gap (SIS - Present)</label>
+                <input type="number" class="form-control" name="teachers_gap_display" id="teachers-gap" min="0" readonly />
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
+
+      <div class="card card-outline card-secondary mb-3">
+        <div class="card-header">
+          <h3 class="card-title">Students Enrollment Information</h3>
+        </div>
+        <div class="card-body">
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group">
-                <label for="teachers-count"><?php echo lang('teachers_count') ?></label>
-                <input type="number" class="form-control" name="teachers_count" id="teachers-count" min="0" />
+                <label for="students-enrollment-sis">Enrollment as per SIS</label>
+                <input type="number" class="form-control" name="students_enrollment_sis" id="students-enrollment-sis" min="0" />
               </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-3">
               <div class="form-group">
-                <label for="students-by-class"><?php echo lang('students_by_class') ?></label>
-                <textarea name="students_by_class" id="students-by-class" class="form-control" rows="3" placeholder="<?php echo lang('students_by_class_placeholder') ?>"></textarea>
+                <label for="students-enrollment-register">Total Enrollment as per Register</label>
+                <input type="number" class="form-control" name="students_enrollment_register" id="students-enrollment-register" min="0" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="students-present">Total Present (Head count)</label>
+                <input type="number" class="form-control" name="students_present" id="students-present" min="0" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="students-gap">Enrollment Gap (SIS - Present)</label>
+                <input type="number" class="form-control" name="students_enrollment_gap_display" id="students-gap" min="0" readonly />
               </div>
             </div>
           </div>
@@ -485,10 +592,26 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
       fillSchoolMeta(opt);
     });
 
-    $('#visit-district').on('change', function() {
-      const districtId = $(this).val();
-      filterTehsilsByDistrict(districtId, '');
-    });
+    function recalcTeachersGap() {
+      const sis = parseInt($('#teachers-sis').val(), 10);
+      const present = parseInt($('#teachers-present').val(), 10);
+      const gap = (!isNaN(sis) && !isNaN(present)) ? sis - present : '';
+      $('#teachers-gap').val(gap === '' ? '' : gap);
+    }
+
+    $('#teachers-sis, #teachers-present').on('input', recalcTeachersGap);
+    recalcTeachersGap();
+
+    function recalcStudentsGap() {
+      const sis = parseInt($('#students-enrollment-sis').val(), 10);
+      const present = parseInt($('#students-present').val(), 10);
+      const gap = (!isNaN(sis) && !isNaN(present)) ? sis - present : '';
+      $('#students-gap').val(gap === '' ? '' : gap);
+    }
+
+    $('#students-enrollment-sis, #students-present').on('input', recalcStudentsGap);
+    recalcStudentsGap();
+
   })
 </script>
 

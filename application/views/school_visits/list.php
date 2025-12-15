@@ -42,6 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <th><?php echo lang('school_code') ?></th>
             <th><?php echo lang('school') ?></th>
             <th><?php echo lang('visit_date') ?></th>
+            <th><?php echo lang('visit_time') ?></th>
             <th><?php echo lang('school_status') ?></th>
             <th><?php echo lang('visited_by') ?></th>
             <th><?php echo lang('action') ?></th>
@@ -55,6 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
               <td><?php echo $row->school_code ?></td>
               <td><?php echo $row->school_name ?></td>
               <td><?php echo date('Y-m-d', strtotime($row->visit_date)) ?></td>
+              <td><?php echo !empty($row->visit_time) ? date('H:i', strtotime($row->visit_time)) : '-'; ?></td>
               <td>
                 <?php if ($row->is_open === 'Open'): ?>
                   <span class="badge badge-success"><?php echo lang('school_status_open') ?></span>

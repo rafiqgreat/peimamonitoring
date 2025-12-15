@@ -104,11 +104,29 @@ defined('BASEPATH') or exit('No direct script access allowed');
   <?php endif ?>
 
   <?php if (logged('role') == 1 || hasPermissions('school_visits_list')): ?>
-    <li class="nav-item">
-      <a href="<?php echo url('school_visits') ?>" class="nav-link <?php echo ($page->menu == 'school_visits' || $this->uri->segment(1) === 'school_visits') ? 'active' : '' ?>">
+    <?php $visitActive = ($page->menu == 'school_visits') || ($this->uri->segment(1) === 'school_visits'); ?>
+    <li class="nav-item has-treeview <?php echo $visitActive ? 'menu-open' : '' ?>">
+      <a href="#" class="nav-link <?php echo $visitActive ? 'active' : '' ?>">
         <i class="nav-icon fas fa-clipboard-check"></i>
-        <p><?php echo lang('school_visits') ?></p>
+        <p>
+          <?php echo ((int) logged('role') === 3) ? 'Inspection Report' : lang('school_visits'); ?>
+          <i class="right fas fa-angle-left"></i>
+        </p>
       </a>
+      <ul class="nav nav-treeview">
+        <li class="nav-item">
+          <a href="<?php echo url('school_visits') ?>" class="nav-link <?php echo ($this->uri->segment(1) === 'school_visits' && $this->uri->segment(2) === '') ? 'active' : '' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p><?php echo ((int) logged('role') === 3) ? 'List' : lang('list_all_school_visits'); ?></p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo url('school_visits/add') ?>" class="nav-link <?php echo ($this->uri->segment(1) === 'school_visits' && $this->uri->segment(2) === 'add') ? 'active' : '' ?>">
+            <i class="far fa-circle nav-icon"></i>
+            <p><?php echo ((int) logged('role') === 3) ? 'Add' : lang('add_school_visit'); ?></p>
+          </a>
+        </li>
+      </ul>
     </li>
   <?php endif ?>
 

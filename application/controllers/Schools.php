@@ -83,10 +83,14 @@ class Schools extends MY_Controller {
 	{
 		$this->authorize('schools_list');
 
-		$this->db->select('schools.*, districts.district_name_en, tehsils.tehsil_name_en');
+		$this->db->select('schools.*, districts.district_name_en, tehsils.tehsil_name_en, (SELECT COUNT(*) FROM school_visit_reports WHERE school_visit_reports.school_id = schools.school_id) as visit_count');
 		$this->db->from('schools');
 		$this->db->join('districts', 'districts.district_id = schools.school_district_id', 'left');
 		$this->db->join('tehsils', 'tehsils.tehsil_id = schools.school_tehsil_id', 'left');
+		$filter_school_id = $this->input->get('school_id');
+		if (!empty($filter_school_id)) {
+			$this->db->where('schools.school_id', (int) $filter_school_id);
+		}
 		$this->db->order_by('school_name', 'asc');
 		$this->page_data['schools'] = $this->db->get()->result();
 

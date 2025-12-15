@@ -24,6 +24,20 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <!-- Main content -->
 <section class="content">
   <div class="container-fluid">
+    <?php if (!empty($school_info) && (int) logged('role') === 3): ?>
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="alert alert-info mb-0">
+            <?php echo lang('school_code'); ?> : <?php echo $school_info->school_code; ?>,
+            <?php echo lang('school'); ?> : <?php echo $school_info->school_name; ?>,
+            <?php echo lang('school_district'); ?> : <?php echo !empty($school_info->district_name_en) ? $school_info->district_name_en : '-'; ?>,
+            <?php echo lang('school_tehsil'); ?> : <?php echo !empty($school_info->tehsil_name_en) ? $school_info->tehsil_name_en : '-'; ?>,
+            <?php echo lang('school_license_name'); ?> : <?php echo $school_info->school_license_name; ?>,
+            <?php echo lang('school_license_orgname'); ?> : <?php echo $school_info->school_license_orgname; ?>.
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
     <!-- Small boxes (Stat box) -->
     <div class="row">
       <div class="col-lg-3 col-6">

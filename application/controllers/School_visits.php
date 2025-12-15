@@ -13,6 +13,25 @@ class School_visits extends MY_Controller
 	];
 
 	private $status_options = ['Open', 'Closed'];
+	private $checklist_keys = [
+		'boundary_wall_main_gate',
+		'drinking_water_available',
+		'washrooms_tiled_floors',
+		'washrooms_handwashing_tap',
+		'washrooms_soap_available',
+		'washrooms_clean_daily',
+		'classrooms_repaired_painted',
+		'classrooms_board_available',
+		'classrooms_ventilation_safety',
+		'classrooms_electricity_working',
+		'classrooms_furniture_sufficient',
+		'classrooms_no_broken_material',
+		'school_grounds_clean',
+		'school_grounds_plants',
+		'school_grounds_pathways',
+		'secondary_ecc_room',
+		'secondary_swings_slides',
+	];
 
 	public function __construct()
 	{
@@ -22,6 +41,8 @@ class School_visits extends MY_Controller
 		$this->load->model('schools_model');
 		$this->load->model('districts_model');
 		$this->load->model('tehsils_model');
+		$this->load->model('school_visit_photos_model');
+		$this->load->library('uploadlib');
 
 		$this->page_data['page']->title = 'School Visit Reports';
 		$this->page_data['page']->menu = 'school_visits';
@@ -122,6 +143,247 @@ class School_visits extends MY_Controller
 		return $this->schools_model->get();
 	}
 
+	private function ensure_upload_paths()
+	{
+		$base = func_get_arg(0);
+		if (!is_dir($base)) {
+			@mkdir($base, 0755, true);
+		}
+	}
+
+	private function optimize_and_thumb($file_path, $thumb_path, $max_width = 1400, $thumb_width = 400)
+	{
+		if (!file_exists($file_path)) {
+			return;
+		}
+
+		$info = getimagesize($file_path);
+		if (!$info) {
+			return;
+		}
+
+		$mime = $info['mime'];
+		switch ($mime) {
+			case 'image/jpeg':
+				$src = imagecreatefromjpeg($file_path);
+				$save_original = function ($img, $path) {
+					imagejpeg($img, $path, 80);
+				};
+				$save_thumb = function ($img, $path) {
+					imagejpeg($img, $path, 75);
+				};
+				break;
+			case 'image/png':
+				$src = imagecreatefrompng($file_path);
+				imagealphablending($src, true);
+				imagesavealpha($src, true);
+				$save_original = function ($img, $path) {
+					imagepng($img, $path, 6);
+				};
+				$save_thumb = function ($img, $path) {
+					imagepng($img, $path, 6);
+				};
+				break;
+			case 'image/gif':
+				$src = imagecreatefromgif($file_path);
+				$save_original = function ($img, $path) {
+					imagegif($img, $path);
+				};
+				$save_thumb = function ($img, $path) {
+					imagegif($img, $path);
+				};
+				break;
+			default:
+				return;
+		}
+
+		$w = imagesx($src);
+		$h = imagesy($src);
+
+		// Optimize original size if wider than max_width
+		if ($w > $max_width) {
+			$new_w = $max_width;
+			$new_h = (int) round($h * ($new_w / $w));
+			$dst = imagecreatetruecolor($new_w, $new_h);
+			imagealphablending($dst, true);
+			imagesavealpha($dst, true);
+			imagecopyresampled($dst, $src, 0, 0, 0, 0, $new_w, $new_h, $w, $h);
+			$save_original($dst, $file_path);
+			imagedestroy($dst);
+		}
+
+		// Create thumb
+		$thumb_w = min($thumb_width, $w);
+		$thumb_h = (int) round($h * ($thumb_w / $w));
+		$thumb = imagecreatetruecolor($thumb_w, $thumb_h);
+		imagealphablending($thumb, true);
+		imagesavealpha($thumb, true);
+		imagecopyresampled($thumb, $src, 0, 0, 0, 0, $thumb_w, $thumb_h, $w, $h);
+		$save_thumb($thumb, $thumb_path);
+		imagedestroy($thumb);
+		imagedestroy($src);
+	}
+
+	private function save_photo($visit_id, $school_code, $checklist_key, $field_name)
+	{
+		if (!isset($_FILES[$field_name]) || (int) $_FILES[$field_name]['error'] === 4) {
+			return;
+		}
+
+		$school_code = trim($school_code) !== '' ? $school_code : 'unknown';
+		$base_path = FCPATH . 'uploads/' . $school_code . '/' . $visit_id;
+		$this->ensure_upload_paths($base_path);
+		// ensure base uploads dir exists
+		$this->ensure_upload_paths(FCPATH . 'uploads');
+
+		$this->uploadlib->initialize([
+			'upload_path' => './uploads/' . $school_code . '/' . $visit_id,
+			'allowed_types' => 'gif|jpg|png|jpeg',
+			'overwrite' => true,
+			'remove_spaces' => true,
+		]);
+
+		// Path already set above; pass empty to avoid double-appending.
+		$upload = $this->uploadlib->uploadImage($field_name, '');
+		if (!$upload['status']) {
+			return;
+		}
+
+		$file_name = $upload['data']['file_name'];
+		$source_path = $base_path . '/' . $file_name;
+		$thumb_name = 'thumb_' . $file_name;
+		$thumb_path = $base_path . '/' . $thumb_name;
+
+		$this->optimize_and_thumb($source_path, $thumb_path);
+
+		// Remove old photo if exists
+		$existing = $this->school_visit_photos_model->getByWhere([
+			'visit_id' => $visit_id,
+			'checklist_key' => $checklist_key,
+		]);
+		if (!empty($existing)) {
+			foreach ($existing as $old) {
+				if (!empty($old->file_name) && file_exists(FCPATH . 'uploads/' . $old->file_name)) {
+					@unlink(FCPATH . 'uploads/' . $old->file_name);
+				}
+				if (!empty($old->thumb_name) && file_exists(FCPATH . 'uploads/' . $old->thumb_name)) {
+					@unlink(FCPATH . 'uploads/' . $old->thumb_name);
+				}
+				$this->school_visit_photos_model->delete($old->id);
+			}
+		}
+
+		$this->school_visit_photos_model->create([
+			'visit_id' => $visit_id,
+			'checklist_key' => $checklist_key,
+			'file_name' => $school_code . '/' . $visit_id . '/' . $file_name,
+			'thumb_name' => $school_code . '/' . $visit_id . '/' . $thumb_name,
+			'created_at' => date('Y-m-d H:i:s'),
+		]);
+	}
+
+	private function save_all_photos($visit_id, $school_code)
+	{
+		foreach ($this->checklist_keys as $key) {
+			$this->save_photo($visit_id, $school_code, $key, 'photo_' . $key);
+		}
+	}
+
+	private function save_gate_photo($visit_id, $school_code, $field_name = 'gate_photo')
+	{
+		if (!isset($_FILES[$field_name]) || (int) $_FILES[$field_name]['error'] === 4) {
+			return;
+		}
+
+		$school_code = trim($school_code) !== '' ? $school_code : 'unknown';
+		$base_path = FCPATH . 'uploads/' . $school_code . '/' . $visit_id . '/gate';
+		// ensure base dirs exist
+		$this->ensure_upload_paths(FCPATH . 'uploads');
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code);
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code . '/' . $visit_id);
+		$this->ensure_upload_paths($base_path);
+
+		$this->uploadlib->initialize([
+			'upload_path' => './uploads/' . $school_code . '/' . $visit_id . '/gate',
+			'allowed_types' => 'gif|jpg|png|jpeg',
+			'overwrite' => true,
+			'remove_spaces' => true,
+		]);
+
+		$upload = $this->uploadlib->uploadImage($field_name, '');
+		if (!$upload['status']) {
+			return;
+		}
+
+		$file_name = $upload['data']['file_name'];
+		$source_path = $base_path . '/' . $file_name;
+		$thumb_name = 'gate_thumb_' . $file_name;
+		$thumb_path = $base_path . '/' . $thumb_name;
+
+		$this->optimize_and_thumb($source_path, $thumb_path);
+
+		$existing = $this->school_visit_reports_model->getById($visit_id);
+		if (!empty($existing) && !empty($existing->gate_photo)) {
+			$oldPath = FCPATH . 'uploads/' . $existing->gate_photo;
+			if (file_exists($oldPath)) {
+				@unlink($oldPath);
+			}
+		}
+
+		$this->school_visit_reports_model->update($visit_id, [
+			'gate_photo' => $school_code . '/' . $visit_id . '/gate/' . $file_name,
+			'updated_at' => date('Y-m-d H:i:s'),
+		]);
+	}
+
+	private function save_head_photo($visit_id, $school_code, $field_name = 'head_photo')
+	{
+		if (!isset($_FILES[$field_name]) || (int) $_FILES[$field_name]['error'] === 4) {
+			return;
+		}
+
+		$school_code = trim($school_code) !== '' ? $school_code : 'unknown';
+		$base_path = FCPATH . 'uploads/' . $school_code . '/' . $visit_id . '/head';
+		// ensure base dirs exist
+		$this->ensure_upload_paths(FCPATH . 'uploads');
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code);
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code . '/' . $visit_id);
+		$this->ensure_upload_paths($base_path);
+
+		$this->uploadlib->initialize([
+			'upload_path' => './uploads/' . $school_code . '/' . $visit_id . '/head',
+			'allowed_types' => 'gif|jpg|png|jpeg',
+			'overwrite' => true,
+			'remove_spaces' => true,
+		]);
+
+		$upload = $this->uploadlib->uploadImage($field_name, '');
+		if (!$upload['status']) {
+			return;
+		}
+
+		$file_name = $upload['data']['file_name'];
+		$source_path = $base_path . '/' . $file_name;
+		$thumb_name = 'head_thumb_' . $file_name;
+		$thumb_path = $base_path . '/' . $thumb_name;
+
+		$this->optimize_and_thumb($source_path, $thumb_path);
+
+		// Delete old head photo if exists
+		$existing = $this->school_visit_reports_model->getById($visit_id);
+		if (!empty($existing) && !empty($existing->head_photo)) {
+			$oldPath = FCPATH . 'uploads/' . $existing->head_photo;
+			if (file_exists($oldPath)) {
+				@unlink($oldPath);
+			}
+		}
+
+		$this->school_visit_reports_model->update($visit_id, [
+			'head_photo' => $school_code . '/' . $visit_id . '/head/' . $file_name,
+			'updated_at' => date('Y-m-d H:i:s'),
+		]);
+	}
+
 	private function find_allowed_school($school_id)
 	{
 		if ((int) logged('role') === 3) {
@@ -159,12 +421,18 @@ class School_visits extends MY_Controller
 		}
 		$this->db->join('users', 'users.id = school_visit_reports.visited_by', 'left');
 
+		$filter_school_id = $this->input->get('school_id');
+		if (!empty($filter_school_id)) {
+			$this->db->where('school_visit_reports.school_id', (int) $filter_school_id);
+		}
+
 		/*
 		if ((int) logged('role') === 3 && !empty(logged('school_id'))) {
 			$this->db->where('school_visit_reports.school_id', (int) logged('school_id'));
 		}
 */
 		$this->db->order_by('visit_date', 'desc');
+		$this->db->order_by('visit_time', 'desc');
 
 		$this->page_data['visits'] = $this->db->get()->result();
 
@@ -209,13 +477,23 @@ class School_visits extends MY_Controller
 
 		$data = [
 			'school_id' => (int) $school_id,
-			'visit_date' => post('visit_date') ? date('Y-m-d', strtotime(post('visit_date'))) : date('Y-m-d'),
+			'visit_date' => date('Y-m-d'),
+			'visit_time' => date('H:i:s'),
 			'visited_by' => logged('id'),
 			'is_open' => $this->validated_status(post('is_open')),
-			'main_gate_condition' => post('main_gate_condition') ? 1 : 0,
-			'classrooms_count' => post('classrooms_count') !== '' ? (int) post('classrooms_count') : null,
-			'washrooms_count' => post('washrooms_count') !== '' ? (int) post('washrooms_count') : null,
-			'teachers_count' => post('teachers_count') !== '' ? (int) post('teachers_count') : null,
+			'teachers_as_per_sis' => post('teachers_as_per_sis') !== '' ? (int) post('teachers_as_per_sis') : null,
+			'teachers_as_per_register' => post('teachers_as_per_register') !== '' ? (int) post('teachers_as_per_register') : null,
+			'teachers_present' => post('teachers_present') !== '' ? (int) post('teachers_present') : null,
+			'teachers_gap' => (post('teachers_as_per_sis') !== '' && post('teachers_present') !== '') ? ((int) post('teachers_as_per_sis') - (int) post('teachers_present')) : null,
+			'students_enrollment_sis' => post('students_enrollment_sis') !== '' ? (int) post('students_enrollment_sis') : null,
+			'students_enrollment_register' => post('students_enrollment_register') !== '' ? (int) post('students_enrollment_register') : null,
+			'students_present' => post('students_present') !== '' ? (int) post('students_present') : null,
+			'students_enrollment_gap' => (post('students_enrollment_sis') !== '' && post('students_present') !== '') ? ((int) post('students_enrollment_sis') - (int) post('students_present')) : null,
+			'head_name' => post('head_name'),
+			'head_gender' => post('head_gender'),
+			'head_contact' => post('head_contact'),
+			'head_whatsapp' => post('head_whatsapp'),
+			'head_email' => post('head_email'),
 			'students_by_class' => post('students_by_class'),
 			'remarks' => post('remarks'),
 			'boundary_wall_main_gate' => post('boundary_wall_main_gate') ? 1 : 0,
@@ -240,6 +518,13 @@ class School_visits extends MY_Controller
 		];
 
 		$id = $this->school_visit_reports_model->create($data);
+
+		$school = $this->schools_model->getById($data['school_id']);
+		$school_code = !empty($school) ? $school->school_code : 'unknown';
+
+		$this->save_all_photos($id, $school_code);
+		$this->save_head_photo($id, $school_code);
+		$this->save_gate_photo($id, $school_code);
 
 		$this->activity_model->add("School visit #$id Created by User: #" . logged('id'), logged('id'));
 
@@ -297,12 +582,20 @@ class School_visits extends MY_Controller
 
 		$data = [
 			'school_id' => (int) $school_id,
-			'visit_date' => post('visit_date') ? date('Y-m-d', strtotime(post('visit_date'))) : date('Y-m-d'),
 			'is_open' => $this->validated_status(post('is_open')),
-			'main_gate_condition' => post('main_gate_condition') ? 1 : 0,
-			'classrooms_count' => post('classrooms_count') !== '' ? (int) post('classrooms_count') : null,
-			'washrooms_count' => post('washrooms_count') !== '' ? (int) post('washrooms_count') : null,
-			'teachers_count' => post('teachers_count') !== '' ? (int) post('teachers_count') : null,
+			'teachers_as_per_sis' => post('teachers_as_per_sis') !== '' ? (int) post('teachers_as_per_sis') : null,
+			'teachers_as_per_register' => post('teachers_as_per_register') !== '' ? (int) post('teachers_as_per_register') : null,
+			'teachers_present' => post('teachers_present') !== '' ? (int) post('teachers_present') : null,
+			'teachers_gap' => (post('teachers_as_per_sis') !== '' && post('teachers_present') !== '') ? ((int) post('teachers_as_per_sis') - (int) post('teachers_present')) : null,
+			'students_enrollment_sis' => post('students_enrollment_sis') !== '' ? (int) post('students_enrollment_sis') : null,
+			'students_enrollment_register' => post('students_enrollment_register') !== '' ? (int) post('students_enrollment_register') : null,
+			'students_present' => post('students_present') !== '' ? (int) post('students_present') : null,
+			'students_enrollment_gap' => (post('students_enrollment_sis') !== '' && post('students_present') !== '') ? ((int) post('students_enrollment_sis') - (int) post('students_present')) : null,
+			'head_name' => post('head_name'),
+			'head_gender' => post('head_gender'),
+			'head_contact' => post('head_contact'),
+			'head_whatsapp' => post('head_whatsapp'),
+			'head_email' => post('head_email'),
 			'students_by_class' => post('students_by_class'),
 			'remarks' => post('remarks'),
 			'boundary_wall_main_gate' => post('boundary_wall_main_gate') ? 1 : 0,
@@ -326,6 +619,13 @@ class School_visits extends MY_Controller
 		];
 
 		$this->school_visit_reports_model->update($id, $data);
+
+		$school = $this->schools_model->getById($school_id);
+		$school_code = !empty($school) ? $school->school_code : 'unknown';
+
+		$this->save_all_photos($id, $school_code);
+		$this->save_head_photo($id, $school_code);
+		$this->save_gate_photo($id, $school_code);
 
 		$this->activity_model->add("School visit #$id Updated by User: #" . logged('id'), logged('id'));
 
@@ -379,6 +679,13 @@ class School_visits extends MY_Controller
 		}
 
 		$this->page_data['visit'] = $visit;
+		$photos = $this->school_visit_photos_model->getByWhere(['visit_id' => $id]);
+		$photo_map = [];
+
+		foreach ($photos as $photo) {
+			$photo_map[$photo->checklist_key] = $photo;
+		}
+		$this->page_data['photos'] = $photo_map;
 		$this->load->view('school_visits/view', $this->page_data);
 	}
 

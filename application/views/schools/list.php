@@ -45,6 +45,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <th><?php echo lang('school_tehsil') ?></th>
             <th><?php echo lang('school_level') ?></th>
             <th><?php echo lang('school_status') ?></th>
+            <th><?php echo lang('school_visits') ?></th>
             <th><?php echo lang('action') ?></th>
           </tr>
         </thead>
@@ -64,6 +65,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                 <?php else: ?>
                   <span class="badge badge-secondary"><?php echo lang('school_status_closed') ?></span>
                 <?php endif ?>
+              </td>
+              <td>
+                <a href="<?php echo url('school_visits?school_id='.$row->school_id) ?>">
+                  <?php echo isset($row->visit_count) ? (int) $row->visit_count : 0; ?>
+                </a>
               </td>
               <td>
                 <?php if (logged('role') == 1 || hasPermissions('schools_view')): ?>
