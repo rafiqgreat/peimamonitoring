@@ -39,6 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         <thead>
           <tr>
             <th><?php echo lang('id') ?></th>
+            <th><?php echo lang('school_code') ?></th>
             <th><?php echo lang('school') ?></th>
             <th><?php echo lang('visit_date') ?></th>
             <th><?php echo lang('school_status') ?></th>
@@ -51,6 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
           <?php foreach ($visits as $row): ?>
             <tr>
               <td width="60"><?php echo $row->id ?></td>
+              <td><?php echo $row->school_code ?></td>
               <td><?php echo $row->school_name ?></td>
               <td><?php echo date('Y-m-d', strtotime($row->visit_date)) ?></td>
               <td>

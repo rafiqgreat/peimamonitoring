@@ -76,7 +76,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <select name="school_tehsil_id" id="school-tehsil-id" class="form-control">
               <option value=""><?php echo lang('select_tehsil') ?></option>
               <?php foreach ($tehsils as $tehsil): ?>
-                <option value="<?php echo $tehsil->tehsil_id ?>"><?php echo $tehsil->tehsil_name_en ?></option>
+                <option value="<?php echo $tehsil->tehsil_id ?>" data-district-id="<?php echo $tehsil->tehsil_district_id ?>"><?php echo $tehsil->tehsil_name_en ?></option>
               <?php endforeach ?>
             </select>
           </div>
@@ -279,6 +279,30 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         $(element).removeClass('is-invalid');
       }
     });
+
+    const allTehsilOptions = $('#school-tehsil-id option').clone();
+
+    function filterTehsils(districtId) {
+      const tehsilSelect = $('#school-tehsil-id');
+      tehsilSelect.empty();
+      tehsilSelect.append('<option value=""><?php echo lang('select_tehsil') ?></option>');
+
+      allTehsilOptions.each(function() {
+        const opt = $(this);
+        const optDistrict = opt.data('district-id');
+        const isPlaceholder = opt.val() === '';
+        if (isPlaceholder || !districtId || optDistrict == districtId) {
+          tehsilSelect.append(opt.clone());
+        }
+      });
+    }
+
+    $('#school-district-id').on('change', function() {
+      filterTehsils($(this).val());
+    });
+
+    // Initialize tehsils list on page load.
+    filterTehsils($('#school-district-id').val());
   })
 
 </script>
