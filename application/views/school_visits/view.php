@@ -273,6 +273,49 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
           <?php endif; ?>
         </div>
       </div>
+
+      <div class="card card-outline card-secondary mb-3">
+        <div class="card-header">
+          <h3 class="card-title">Flood Affected Areas</h3>
+        </div>
+        <div class="card-body">
+          <table class="table table-bordered">
+            <tr><th>Exists</th><td><?php echo !empty($visit->flood_exists) ? 'Yes' : 'No'; ?></td></tr>
+          </table>
+          <?php if (!empty($visit->flood_exists)): ?>
+            <div class="table-responsive mt-2">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Photo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php if (!empty($flood_photos)): ?>
+                    <?php foreach ($flood_photos as $fp): ?>
+                      <tr>
+                        <td><?php echo $fp->building_type; ?></td>
+                        <td>
+                          <?php if (!empty($fp->file_name)): ?>
+                            <a href="javascript:void(0)" class="popup-photo" data-full="<?php echo base_url('uploads/'.$fp->file_name); ?>">
+                              <img src="<?php echo base_url('uploads/'.$fp->file_name); ?>" alt="Flood Photo" style="height:60px" />
+                            </a>
+                          <?php else: ?>
+                            -
+                          <?php endif; ?>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <tr><td colspan="2" class="text-center">No flood photos uploaded.</td></tr>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
+          <?php endif; ?>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-12">
           <?php $photos = isset($photos) ? $photos : []; ?>

@@ -506,6 +506,51 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         </div>
       </div>
 
+      <div class="card card-outline card-secondary mb-3">
+        <div class="card-header">
+          <h3 class="card-title">Flood Affected Areas</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Flood affected?</label>
+            <select name="flood_exists" id="flood-exists" class="form-control">
+              <option value="0" <?php echo !empty($visit->flood_exists) ? '' : 'selected'; ?>>No</option>
+              <option value="1" <?php echo !empty($visit->flood_exists) ? 'selected' : ''; ?>>Yes</option>
+            </select>
+          </div>
+          <div id="flood-wrap" class="<?php echo !empty($visit->flood_exists) ? '' : 'd-none'; ?>">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="flood-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Photo</th>
+                    <th style="width: 50px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <select name="flood_type[]" class="form-control">
+                        <option value="Rooms">Rooms</option>
+                        <option value="Washrooms">Washrooms</option>
+                        <option value="Wall">Wall</option>
+                        <option value="Gate">Gate</option>
+                        <option value="Branda">Branda</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </td>
+                    <td><input type="file" name="flood_photo[]" accept="image/*" class="form-control-file" /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger flood-remove">&times;</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <button type="button" class="btn btn-sm btn-primary" id="flood-add-row"><i class="fa fa-plus"></i> Add Flood Area</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card card-outline card-secondary">
         <div class="card-header">
           <h3 class="card-title">Remarks</h3>
@@ -592,6 +637,28 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
     $('#dangerous-table').on('click', '.dangerous-remove', function() {
       const rows = $('#dangerous-table tbody tr').length;
+      if (rows > 1) {
+        $(this).closest('tr').remove();
+      }
+    });
+
+    function toggleFlood() {
+      const show = $('#flood-exists').val() === '1';
+      $('#flood-wrap').toggleClass('d-none', !show);
+    }
+
+    $('#flood-exists').on('change', toggleFlood);
+    toggleFlood();
+
+    $('#flood-add-row').on('click', function() {
+      const row = $('#flood-table tbody tr:first').clone();
+      row.find('select').val('Rooms');
+      row.find('input[type=\"file\"]').val('');
+      $('#flood-table tbody').append(row);
+    });
+
+    $('#flood-table').on('click', '.flood-remove', function() {
+      const rows = $('#flood-table tbody tr').length;
       if (rows > 1) {
         $(this).closest('tr').remove();
       }

@@ -43,6 +43,7 @@ class School_visits extends MY_Controller
 		$this->load->model('tehsils_model');
 		$this->load->model('school_visit_photos_model');
 		$this->load->model('school_visit_dangerous_photos_model');
+		$this->load->model('school_visit_flood_photos_model');
 		$this->load->library('uploadlib');
 
 		$this->page_data['page']->title = 'School Visit Reports';
@@ -447,6 +448,67 @@ class School_visits extends MY_Controller
 		]);
 	}
 
+	private function save_flood_photos($visit_id, $school_code)
+	{
+		$exists = post('flood_exists') === '1';
+		$types = $this->input->post('flood_type');
+
+		// clear existing entries
+		$existing = $this->school_visit_flood_photos_model->getByWhere(['visit_id' => $visit_id]);
+		foreach ($existing as $old) {
+			if (!empty($old->file_name) && file_exists(FCPATH . 'uploads/' . $old->file_name)) {
+				@unlink(FCPATH . 'uploads/' . $old->file_name);
+			}
+		}
+		$this->school_visit_flood_photos_model->delete_by_visit($visit_id);
+
+		if (!$exists || empty($types) || !isset($_FILES['flood_photo'])) {
+			return;
+		}
+
+		$school_code = trim($school_code) !== '' ? $school_code : 'unknown';
+		$base_dir = FCPATH . 'uploads/' . $school_code . '/' . $visit_id . '/flood';
+		$this->ensure_upload_paths(FCPATH . 'uploads');
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code);
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code . '/' . $visit_id);
+		$this->ensure_upload_paths($base_dir);
+
+		$files = $_FILES['flood_photo'];
+		$count = count($types);
+
+		for ($i = 0; $i < $count; $i++) {
+			if (!isset($files['name'][$i]) || $files['error'][$i] === 4) {
+				continue;
+			}
+
+			$_FILES['single_flood']['name'] = $files['name'][$i];
+			$_FILES['single_flood']['type'] = $files['type'][$i];
+			$_FILES['single_flood']['tmp_name'] = $files['tmp_name'][$i];
+			$_FILES['single_flood']['error'] = $files['error'][$i];
+			$_FILES['single_flood']['size'] = $files['size'][$i];
+
+			$this->uploadlib->initialize([
+				'upload_path' => './uploads/' . $school_code . '/' . $visit_id . '/flood',
+				'allowed_types' => 'gif|jpg|png|jpeg',
+				'overwrite' => false,
+				'remove_spaces' => true,
+			]);
+
+			$upload = $this->uploadlib->uploadImage('single_flood', '');
+			if (!$upload['status']) {
+				continue;
+			}
+
+			$file_name = $upload['data']['file_name'];
+			$this->school_visit_flood_photos_model->create([
+				'visit_id' => $visit_id,
+				'building_type' => isset($types[$i]) ? $types[$i] : '',
+				'file_name' => $school_code . '/' . $visit_id . '/flood/' . $file_name,
+				'created_at' => date('Y-m-d H:i:s'),
+			]);
+		}
+	}
+
 	private function find_allowed_school($school_id)
 	{
 		if ((int) logged('role') === 3) {
@@ -553,6 +615,7 @@ class School_visits extends MY_Controller
 			'students_present' => post('students_present') !== '' ? (int) post('students_present') : null,
 			'students_enrollment_gap' => (post('students_enrollment_sis') !== '' && post('students_present') !== '') ? ((int) post('students_enrollment_sis') - (int) post('students_present')) : null,
 			'dangerous_exists' => post('dangerous_exists') === '1' ? 1 : 0,
+			'flood_exists' => post('flood_exists') === '1' ? 1 : 0,
 			'head_name' => post('head_name'),
 			'head_gender' => post('head_gender'),
 			'head_contact' => post('head_contact'),
@@ -596,6 +659,7 @@ class School_visits extends MY_Controller
 		$this->save_head_photo($id, $school_code);
 		$this->save_gate_photo($id, $school_code);
 		$this->save_dangerous_photos($id, $school_code);
+		$this->save_flood_photos($id, $school_code);
 
 		$this->activity_model->add("School visit #$id Created by User: #" . logged('id'), logged('id'));
 
@@ -663,6 +727,7 @@ class School_visits extends MY_Controller
 			'students_present' => post('students_present') !== '' ? (int) post('students_present') : null,
 			'students_enrollment_gap' => (post('students_enrollment_sis') !== '' && post('students_present') !== '') ? ((int) post('students_enrollment_sis') - (int) post('students_present')) : null,
 			'dangerous_exists' => post('dangerous_exists') === '1' ? 1 : 0,
+			'flood_exists' => post('flood_exists') === '1' ? 1 : 0,
 			'head_name' => post('head_name'),
 			'head_gender' => post('head_gender'),
 			'head_contact' => post('head_contact'),
@@ -705,6 +770,7 @@ class School_visits extends MY_Controller
 		$this->save_head_photo($id, $school_code);
 		$this->save_gate_photo($id, $school_code);
 		$this->save_dangerous_photos($id, $school_code);
+		$this->save_flood_photos($id, $school_code);
 
 		$this->activity_model->add("School visit #$id Updated by User: #" . logged('id'), logged('id'));
 
@@ -766,6 +832,7 @@ class School_visits extends MY_Controller
 		}
 		$this->page_data['photos'] = $photo_map;
 		$this->page_data['dangerous_photos'] = $this->school_visit_dangerous_photos_model->getByWhere(['visit_id' => $id]);
+		$this->page_data['flood_photos'] = $this->school_visit_flood_photos_model->getByWhere(['visit_id' => $id]);
 		$this->load->view('school_visits/view', $this->page_data);
 	}
 
