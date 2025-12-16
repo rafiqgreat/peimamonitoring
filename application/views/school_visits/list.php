@@ -41,6 +41,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <th><?php echo lang('id') ?></th>
             <th><?php echo lang('school_code') ?></th>
             <th><?php echo lang('school') ?></th>
+            <th><?php echo lang('school_district') ?></th>
+            <th><?php echo lang('school_tehsil') ?></th>
             <th><?php echo lang('visit_date') ?></th>
             <th><?php echo lang('visit_time') ?></th>
             <th><?php echo lang('school_status') ?></th>
@@ -55,6 +57,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
               <td width="60"><?php echo $row->id ?></td>
               <td><?php echo $row->school_code ?></td>
               <td><?php echo $row->school_name ?></td>
+              <td><?php echo !empty($row->district_name_en) ? $row->district_name_en : '-'; ?></td>
+              <td><?php echo !empty($row->tehsil_name_en) ? $row->tehsil_name_en : '-'; ?></td>
               <td><?php echo date('Y-m-d', strtotime($row->visit_date)) ?></td>
               <td><?php echo !empty($row->visit_time) ? date('H:i', strtotime($row->visit_time)) : '-'; ?></td>
               <td>

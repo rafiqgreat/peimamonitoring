@@ -237,7 +237,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         </div>
         <div class="card-body">
           <table class="table table-bordered">
-            <tr><th>Exists</th><td><?php echo $visit->dangerous_exists ? 'Yes' : 'No'; ?></td></tr>
+            <tr>
+              <th>Exists</th>
+              <td><?php echo $visit->dangerous_exists ? 'Yes' : 'No'; ?></td>
+            </tr>
           </table>
           <?php if ($visit->dangerous_exists): ?>
             <div class="table-responsive mt-2">
@@ -255,8 +258,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <td><?php echo $dp->building_type; ?></td>
                         <td>
                           <?php if (!empty($dp->file_name)): ?>
-                            <a href="javascript:void(0)" class="dangerous-photo-thumb" data-full="<?php echo base_url('uploads/'.$dp->file_name); ?>">
-                              <img src="<?php echo base_url('uploads/'.$dp->file_name); ?>" alt="Dangerous Photo" style="height:60px" />
+                            <a href="javascript:void(0)" class="dangerous-photo-thumb" data-full="<?php echo base_url('uploads/' . $dp->file_name); ?>">
+                              <img src="<?php echo base_url('uploads/' . $dp->file_name); ?>" alt="Dangerous Photo" style="height:60px" />
                             </a>
                           <?php else: ?>
                             -
@@ -265,7 +268,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                       </tr>
                     <?php endforeach; ?>
                   <?php else: ?>
-                    <tr><td colspan="2" class="text-center">No dangerous building photos uploaded.</td></tr>
+                    <tr>
+                      <td colspan="2" class="text-center">No dangerous building photos uploaded.</td>
+                    </tr>
                   <?php endif; ?>
                 </tbody>
               </table>
@@ -280,7 +285,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         </div>
         <div class="card-body">
           <table class="table table-bordered">
-            <tr><th>Exists</th><td><?php echo !empty($visit->flood_exists) ? 'Yes' : 'No'; ?></td></tr>
+            <tr>
+              <th>Exists</th>
+              <td><?php echo !empty($visit->flood_exists) ? 'Yes' : 'No'; ?></td>
+            </tr>
           </table>
           <?php if (!empty($visit->flood_exists)): ?>
             <div class="table-responsive mt-2">
@@ -298,8 +306,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <td><?php echo $fp->building_type; ?></td>
                         <td>
                           <?php if (!empty($fp->file_name)): ?>
-                            <a href="javascript:void(0)" class="popup-photo" data-full="<?php echo base_url('uploads/'.$fp->file_name); ?>">
-                              <img src="<?php echo base_url('uploads/'.$fp->file_name); ?>" alt="Flood Photo" style="height:60px" />
+                            <a href="javascript:void(0)" class="popup-photo" data-full="<?php echo base_url('uploads/' . $fp->file_name); ?>">
+                              <img src="<?php echo base_url('uploads/' . $fp->file_name); ?>" alt="Flood Photo" style="height:60px" />
                             </a>
                           <?php else: ?>
                             -
@@ -308,7 +316,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                       </tr>
                     <?php endforeach; ?>
                   <?php else: ?>
-                    <tr><td colspan="2" class="text-center">No flood photos uploaded.</td></tr>
+                    <tr>
+                      <td colspan="2" class="text-center">No flood photos uploaded.</td>
+                    </tr>
                   <?php endif; ?>
                 </tbody>
               </table>
@@ -319,100 +329,118 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
       <div class="row">
         <div class="col-md-12">
           <?php $photos = isset($photos) ? $photos : []; ?>
+          <?php
+          $renderBeforeAfter = function ($beforeKey, $afterKey, $photos) {
+            $parts = [];
+            if (!empty($photos[$beforeKey])) {
+              $parts[] = '<a href="javascript:void(0)" class="popup-photo" data-full="' . base_url('uploads/' . $photos[$beforeKey]->file_name) . '"><img src="' . base_url('uploads/' . $photos[$beforeKey]->thumb_name) . '" alt="Before" style="height:60px" /></a>';
+            }
+            if (!empty($photos[$afterKey])) {
+              $parts[] = '<a href="javascript:void(0)" class="popup-photo" data-full="' . base_url('uploads/' . $photos[$afterKey]->file_name) . '"><img src="' . base_url('uploads/' . $photos[$afterKey]->thumb_name) . '" alt="After" style="height:60px" /></a>';
+            }
+            return !empty($parts) ? implode(' ', $parts) : '-';
+          };
+          ?>
           <h4 class="mt-3">Compliance Checklist</h4>
           <table class="table table-bordered table-striped" id="compliance-table">
             <thead>
               <tr>
                 <th>Item</th>
                 <th>Status</th>
-                <th>Photo</th>
+                <th>Photos (Before / After)</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th>Boundary wall &amp; main gate secure/repaired/painted; name/EMIS displayed</th>
                 <td><?php echo $visit->boundary_wall_main_gate ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['boundary_wall_main_gate'])): ?><a href="<?php echo base_url('uploads/' . $photos['boundary_wall_main_gate']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['boundary_wall_main_gate']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('boundary_wall_main_gate_before', 'boundary_wall_main_gate_after', $photos); ?>
+                </td>
               </tr>
               <tr>
                 <th>Drinking water clean, safe, available</th>
                 <td><?php echo $visit->drinking_water_available ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['drinking_water_available'])): ?><a href="<?php echo base_url('uploads/' . $photos['drinking_water_available']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['drinking_water_available']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('drinking_water_available_before', 'drinking_water_available_after', $photos); ?></td>
+              </tr>
+              <tr>
+                <th>Washrooms (Before/After Photos)</th>
+                <td>-</td>
+                <td><?php echo $renderBeforeAfter('washrooms_before', 'washrooms_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Washrooms have tiled floors</th>
                 <td><?php echo $visit->washrooms_tiled_floors ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['washrooms_tiled_floors'])): ?><a href="<?php echo base_url('uploads/' . $photos['washrooms_tiled_floors']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['washrooms_tiled_floors']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('washrooms_tiled_floors_before', 'washrooms_tiled_floors_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Handwashing station with functional tap</th>
                 <td><?php echo $visit->washrooms_handwashing_tap ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['washrooms_handwashing_tap'])): ?><a href="<?php echo base_url('uploads/' . $photos['washrooms_handwashing_tap']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['washrooms_handwashing_tap']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('washrooms_handwashing_tap_before', 'washrooms_handwashing_tap_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Soap available</th>
                 <td><?php echo $visit->washrooms_soap_available ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['washrooms_soap_available'])): ?><a href="<?php echo base_url('uploads/' . $photos['washrooms_soap_available']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['washrooms_soap_available']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('washrooms_soap_available_before', 'washrooms_soap_available_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Washrooms cleaned daily</th>
                 <td><?php echo $visit->washrooms_clean_daily ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['washrooms_clean_daily'])): ?><a href="<?php echo base_url('uploads/' . $photos['washrooms_clean_daily']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['washrooms_clean_daily']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('washrooms_clean_daily_before', 'washrooms_clean_daily_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Classrooms repaired/painted (floors, walls, verandas, roofs)</th>
                 <td><?php echo $visit->classrooms_repaired_painted ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['classrooms_repaired_painted'])): ?><a href="<?php echo base_url('uploads/' . $photos['classrooms_repaired_painted']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['classrooms_repaired_painted']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('classrooms_repaired_painted_before', 'classrooms_repaired_painted_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Whiteboard/blackboard available</th>
                 <td><?php echo $visit->classrooms_board_available ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['classrooms_board_available'])): ?><a href="<?php echo base_url('uploads/' . $photos['classrooms_board_available']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['classrooms_board_available']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('classrooms_board_available_before', 'classrooms_board_available_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Proper ventilation and safety</th>
                 <td><?php echo $visit->classrooms_ventilation_safety ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['classrooms_ventilation_safety'])): ?><a href="<?php echo base_url('uploads/' . $photos['classrooms_ventilation_safety']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['classrooms_ventilation_safety']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('classrooms_ventilation_safety_before', 'classrooms_ventilation_safety_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Electricity/fans/lights functional</th>
                 <td><?php echo $visit->classrooms_electricity_working ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['classrooms_electricity_working'])): ?><a href="<?php echo base_url('uploads/' . $photos['classrooms_electricity_working']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['classrooms_electricity_working']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('classrooms_electricity_working_before', 'classrooms_electricity_working_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Sufficient student furniture</th>
                 <td><?php echo $visit->classrooms_furniture_sufficient ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['classrooms_furniture_sufficient'])): ?><a href="<?php echo base_url('uploads/' . $photos['classrooms_furniture_sufficient']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['classrooms_furniture_sufficient']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('classrooms_furniture_sufficient_before', 'classrooms_furniture_sufficient_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>No broken/unused material present</th>
                 <td><?php echo $visit->classrooms_no_broken_material ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['classrooms_no_broken_material'])): ?><a href="<?php echo base_url('uploads/' . $photos['classrooms_no_broken_material']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['classrooms_no_broken_material']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('classrooms_no_broken_material_before', 'classrooms_no_broken_material_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>School grounds clean and maintained</th>
                 <td><?php echo $visit->school_grounds_clean ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['school_grounds_clean'])): ?><a href="<?php echo base_url('uploads/' . $photos['school_grounds_clean']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['school_grounds_clean']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('school_grounds_clean_before', 'school_grounds_clean_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Grass/trees planted and maintained</th>
                 <td><?php echo $visit->school_grounds_plants ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['school_grounds_plants'])): ?><a href="<?php echo base_url('uploads/' . $photos['school_grounds_plants']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['school_grounds_plants']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('school_grounds_plants_before', 'school_grounds_plants_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Pathways with bricks or tuff tiles</th>
                 <td><?php echo $visit->school_grounds_pathways ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['school_grounds_pathways'])): ?><a href="<?php echo base_url('uploads/' . $photos['school_grounds_pathways']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['school_grounds_pathways']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('school_grounds_pathways_before', 'school_grounds_pathways_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Secondary (optional): ECC room with LED</th>
                 <td><?php echo $visit->secondary_ecc_room ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['secondary_ecc_room'])): ?><a href="<?php echo base_url('uploads/' . $photos['secondary_ecc_room']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['secondary_ecc_room']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('secondary_ecc_room_before', 'secondary_ecc_room_after', $photos); ?></td>
               </tr>
               <tr>
                 <th>Secondary (optional): Swings and slides</th>
                 <td><?php echo $visit->secondary_swings_slides ? 'Yes' : 'No'; ?></td>
-                <td><?php if (!empty($photos['secondary_swings_slides'])): ?><a href="<?php echo base_url('uploads/' . $photos['secondary_swings_slides']->file_name); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $photos['secondary_swings_slides']->thumb_name); ?>" alt="Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                <td><?php echo $renderBeforeAfter('secondary_swings_slides_before', 'secondary_swings_slides_after', $photos); ?></td>
               </tr>
             </tbody>
           </table>
@@ -442,24 +470,24 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <script>
   $('#compliance-table').on('click', 'a', function(e) {
-    var full = $(this).attr('href');
-    if (!full) {
+    var full = $(this).data('full') || $(this).attr('href');
+    if (!full || full === 'javascript:void(0)') {
       return;
     }
     e.preventDefault();
-  $('#photoModalImg').attr('src', full);
-  $('#photoModal').modal('show');
-});
-$('.dangerous-photo-thumb').on('click', function() {
-  var full = $(this).data('full');
-  $('#photoModalImg').attr('src', full);
-  $('#photoModal').modal('show');
-});
-$('.popup-photo').on('click', function() {
-  var full = $(this).data('full');
-  $('#photoModalImg').attr('src', full);
-  $('#photoModal').modal('show');
-});
+    $('#photoModalImg').attr('src', full);
+    $('#photoModal').modal('show');
+  });
+  $('.dangerous-photo-thumb').on('click', function() {
+    var full = $(this).data('full');
+    $('#photoModalImg').attr('src', full);
+    $('#photoModal').modal('show');
+  });
+  $('.popup-photo').on('click', function() {
+    var full = $(this).data('full');
+    $('#photoModalImg').attr('src', full);
+    $('#photoModal').modal('show');
+  });
 </script>
 
 <?php include viewPath('includes/footer'); ?>

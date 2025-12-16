@@ -111,7 +111,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->boundary_wall_main_gate ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->boundary_wall_main_gate ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_boundary_wall_main_gate" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_boundary_wall_main_gate_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_boundary_wall_main_gate_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -129,12 +136,32 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
+                <label>Washrooms Photos</label>
+                <div class="mt-1">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_washrooms_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_washrooms_after" accept="image/*" class="form-control-file" />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
                 <label>Washrooms have tiled floors</label>
                 <select name="washrooms_tiled_floors" class="form-control">
                   <option value="1" <?php echo $visit->washrooms_tiled_floors ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->washrooms_tiled_floors ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_washrooms_tiled_floors" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_washrooms_tiled_floors_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_washrooms_tiled_floors_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -144,7 +171,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->washrooms_handwashing_tap ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->washrooms_handwashing_tap ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_washrooms_handwashing_tap" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_washrooms_handwashing_tap_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_washrooms_handwashing_tap_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
@@ -157,7 +191,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->washrooms_soap_available ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->washrooms_soap_available ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_washrooms_soap_available" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_washrooms_soap_available_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_washrooms_soap_available_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -167,7 +208,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->washrooms_clean_daily ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->washrooms_clean_daily ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_washrooms_clean_daily" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_washrooms_clean_daily_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_washrooms_clean_daily_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
@@ -180,7 +228,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->classrooms_repaired_painted ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->classrooms_repaired_painted ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_classrooms_repaired_painted" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_classrooms_repaired_painted_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_classrooms_repaired_painted_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -190,7 +245,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->classrooms_board_available ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->classrooms_board_available ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_classrooms_board_available" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_classrooms_board_available_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_classrooms_board_available_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
@@ -203,7 +265,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->classrooms_ventilation_safety ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->classrooms_ventilation_safety ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_classrooms_ventilation_safety" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_classrooms_ventilation_safety_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_classrooms_ventilation_safety_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -213,7 +282,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->classrooms_electricity_working ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->classrooms_electricity_working ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_classrooms_electricity_working" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_classrooms_electricity_working_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_classrooms_electricity_working_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
@@ -226,7 +302,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->classrooms_furniture_sufficient ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->classrooms_furniture_sufficient ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_classrooms_furniture_sufficient" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_classrooms_furniture_sufficient_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_classrooms_furniture_sufficient_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -236,7 +319,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->classrooms_no_broken_material ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->classrooms_no_broken_material ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_classrooms_no_broken_material" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_classrooms_no_broken_material_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_classrooms_no_broken_material_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
@@ -249,7 +339,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->school_grounds_clean ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->school_grounds_clean ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_school_grounds_clean" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_school_grounds_clean_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_school_grounds_clean_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -259,7 +356,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->school_grounds_plants ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->school_grounds_plants ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_school_grounds_plants" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_school_grounds_plants_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_school_grounds_plants_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
@@ -272,7 +376,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->school_grounds_pathways ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->school_grounds_pathways ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_school_grounds_pathways" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_school_grounds_pathways_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_school_grounds_pathways_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -282,7 +393,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->secondary_ecc_room ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->secondary_ecc_room ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_secondary_ecc_room" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_secondary_ecc_room_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_secondary_ecc_room_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
@@ -295,7 +413,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <option value="1" <?php echo $visit->secondary_swings_slides ? 'selected' : '' ?>>Yes</option>
                   <option value="0" <?php echo !$visit->secondary_swings_slides ? 'selected' : '' ?>>No</option>
                 </select>
-                <input type="file" name="photo_secondary_swings_slides" accept="image/*" class="form-control-file mt-1" />
+                <div class="mt-2">
+                  <label class="mb-1">Before Photo</label>
+                  <input type="file" name="photo_secondary_swings_slides_before" accept="image/*" class="form-control-file" />
+                </div>
+                <div class="mt-2">
+                  <label class="mb-1">After Photo</label>
+                  <input type="file" name="photo_secondary_swings_slides_after" accept="image/*" class="form-control-file" />
+                </div>
               </div>
             </div>
           </div>
