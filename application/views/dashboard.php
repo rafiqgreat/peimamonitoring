@@ -80,6 +80,18 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <a href="<?php echo url('schools'); ?>" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3><?php echo isset($dangerous_schools) ? (int) $dangerous_schools : 0; ?></h3>
+              <p>Dangerous Schools</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-flame"></i>
+            </div>
+            <a href="<?php echo url('school_visits'); ?>" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
       <?php endif; ?>
 
     </div>

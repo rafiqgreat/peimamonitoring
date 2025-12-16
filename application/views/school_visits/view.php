@@ -112,7 +112,15 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 </tr>
                 <tr>
                   <th>School Gate Photo</th>
-                  <td><?php if (!empty($visit->gate_photo)): ?><a href="<?php echo base_url('uploads/' . $visit->gate_photo); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $visit->gate_photo); ?>" alt="Gate Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                  <td>
+                    <?php if (!empty($visit->gate_photo)): ?>
+                      <a href="javascript:void(0)" class="popup-photo" data-full="<?php echo base_url('uploads/' . $visit->gate_photo); ?>">
+                        <img src="<?php echo base_url('uploads/' . $visit->gate_photo); ?>" alt="Gate Photo" style="height:60px" />
+                      </a>
+                    <?php else: ?>
+                      -
+                    <?php endif; ?>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -154,7 +162,15 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 </tr>
                 <tr>
                   <th>Head Photo</th>
-                  <td><?php if (!empty($visit->head_photo)): ?><a href="<?php echo base_url('uploads/' . $visit->head_photo); ?>" target="_blank"><img src="<?php echo base_url('uploads/' . $visit->head_photo); ?>" alt="Head Photo" style="height:60px" /></a><?php else: ?>-<?php endif; ?></td>
+                  <td>
+                    <?php if (!empty($visit->head_photo)): ?>
+                      <a href="javascript:void(0)" class="popup-photo" data-full="<?php echo base_url('uploads/' . $visit->head_photo); ?>">
+                        <img src="<?php echo base_url('uploads/' . $visit->head_photo); ?>" alt="Head Photo" style="height:60px" />
+                      </a>
+                    <?php else: ?>
+                      -
+                    <?php endif; ?>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -392,6 +408,11 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
   $('#photoModal').modal('show');
 });
 $('.dangerous-photo-thumb').on('click', function() {
+  var full = $(this).data('full');
+  $('#photoModalImg').attr('src', full);
+  $('#photoModal').modal('show');
+});
+$('.popup-photo').on('click', function() {
   var full = $(this).data('full');
   $('#photoModalImg').attr('src', full);
   $('#photoModal').modal('show');

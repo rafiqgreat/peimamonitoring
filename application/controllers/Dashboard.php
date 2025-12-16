@@ -67,6 +67,21 @@ class Dashboard extends MY_Controller
 			$this->db->having('COUNT(school_visit_reports.id) = 0', null, false);
 			$pending = $this->db->get()->num_rows();
 			$this->page_data['pending_schools'] = $pending;
+
+			// dangerous schools (at least one visit marked dangerous)
+			$dangerous_count = 0;
+			if ($this->db->table_exists('school_visit_reports') && $this->db->field_exists('dangerous_exists', 'school_visit_reports')) {
+				$db_debug = $this->db->db_debug;
+				$this->db->db_debug = false;
+				$this->db->distinct();
+				$this->db->select('school_id');
+				$this->db->from('school_visit_reports');
+				$this->db->where('dangerous_exists', 1);
+				$query = $this->db->get();
+				$dangerous_count = $query ? $query->num_rows() : 0;
+				$this->db->db_debug = $db_debug;
+			}
+			$this->page_data['dangerous_schools'] = $dangerous_count;
 		}
 
 		if ($this->db->table_exists('school_visit_reports')) {
