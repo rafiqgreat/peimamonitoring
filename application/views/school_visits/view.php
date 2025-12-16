@@ -88,7 +88,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
               <table class="table table-bordered">
                 <tr>
                   <th><?php echo lang('visited_by') ?></th>
-                  <td><?php echo $visit->visitor_name ?></td>
+                  <td><?php echo ((int) logged('role') === 3) ? 'Head of School' : $visit->visitor_name ?></td>
                 </tr>
                 <tr>
                   <th><?php echo lang('created_at') ?></th>
@@ -213,6 +213,48 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
               </table>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="card card-outline card-secondary mb-3">
+        <div class="card-header">
+          <h3 class="card-title">Dangerous Building</h3>
+        </div>
+        <div class="card-body">
+          <table class="table table-bordered">
+            <tr><th>Exists</th><td><?php echo $visit->dangerous_exists ? 'Yes' : 'No'; ?></td></tr>
+          </table>
+          <?php if ($visit->dangerous_exists): ?>
+            <div class="table-responsive mt-2">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Photo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php if (!empty($dangerous_photos)): ?>
+                    <?php foreach ($dangerous_photos as $dp): ?>
+                      <tr>
+                        <td><?php echo $dp->building_type; ?></td>
+                        <td>
+                          <?php if (!empty($dp->file_name)): ?>
+                            <a href="javascript:void(0)" class="dangerous-photo-thumb" data-full="<?php echo base_url('uploads/'.$dp->file_name); ?>">
+                              <img src="<?php echo base_url('uploads/'.$dp->file_name); ?>" alt="Dangerous Photo" style="height:60px" />
+                            </a>
+                          <?php else: ?>
+                            -
+                          <?php endif; ?>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <tr><td colspan="2" class="text-center">No dangerous building photos uploaded.</td></tr>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
       <div class="row">
@@ -346,9 +388,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
       return;
     }
     e.preventDefault();
-    $('#photoModalImg').attr('src', full);
-    $('#photoModal').modal('show');
-  });
+  $('#photoModalImg').attr('src', full);
+  $('#photoModal').modal('show');
+});
+$('.dangerous-photo-thumb').on('click', function() {
+  var full = $(this).data('full');
+  $('#photoModalImg').attr('src', full);
+  $('#photoModal').modal('show');
+});
 </script>
 
 <?php include viewPath('includes/footer'); ?>

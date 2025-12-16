@@ -5,6 +5,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 <div class="login-box">
   <div class="login-logo">
+    <div class="mb-2">
+      <img src="<?php echo base_url('assets/img/peima-logo.png'); ?>" alt="PEIMA Logo" style="max-width:120px; height:auto;">
+    </div>
     <a href="<?php echo url('/') ?>"><?php echo setting('company_name') ?></a>
   </div>
   <?php if(isset($message)): ?>

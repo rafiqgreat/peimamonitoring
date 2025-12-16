@@ -27,7 +27,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     <?php if (!empty($school_info) && (int) logged('role') === 3): ?>
       <div class="row mb-3">
         <div class="col-12">
-          <div class="alert alert-info mb-0">
+          <div class="alert alert-success mb-0">
             <?php echo lang('school_code'); ?> : <?php echo $school_info->school_code; ?>,
             <?php echo lang('school'); ?> : <?php echo $school_info->school_name; ?>,
             <?php echo lang('school_district'); ?> : <?php echo !empty($school_info->district_name_en) ? $school_info->district_name_en : '-'; ?>,
@@ -38,197 +38,98 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         </div>
       </div>
     <?php endif; ?>
+
     <!-- Small boxes (Stat box) -->
     <div class="row">
       <div class="col-lg-3 col-6">
         <!-- small box -->
         <div class="small-box bg-info">
           <div class="inner">
-            <h3>150</h3>
+            <h3><?php echo isset($visit_count) ? (int) $visit_count : 0; ?></h3>
 
-            <p><?php echo lang('dashboard_new_orders'); ?></p>
+            <p>Visits / Inspections</p>
           </div>
           <div class="icon">
-            <i class="ion ion-bag"></i>
+            <i class="ion ion-clipboard"></i>
           </div>
-          <a href="#" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
+          <a href="<?php echo url('school_visits'); ?>" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
         </div>
       </div>
-      <!-- ./col -->
-      <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-success">
-          <div class="inner">
-            <h3>53<sup style="font-size: 20px">%</sup></h3>
+      <?php if ((int) logged('role') !== 3): ?>
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3><?php echo isset($schools_count) ? (int) $schools_count : 0; ?></h3>
+              <p>Total Schools</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-university"></i>
+            </div>
+            <a href="<?php echo url('schools'); ?>" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3><?php echo isset($pending_schools) ? (int) $pending_schools : 0; ?></h3>
+              <p>Pending Schools </p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-alert-circled"></i>
+            </div>
+            <a href="<?php echo url('schools'); ?>" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+      <?php endif; ?>
 
-            <p><?php echo lang('dashboard_bounce_rate'); ?></p>
-          </div>
-          <div class="icon">
-            <i class="ion ion-stats-bars"></i>
-          </div>
-          <a href="#" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-      </div>
-      <!-- ./col -->
-      <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-warning">
-          <div class="inner">
-            <h3>44</h3>
-
-            <p><?php echo lang('dashboard_user_register'); ?></p>
-          </div>
-          <div class="icon">
-            <i class="ion ion-person-add"></i>
-          </div>
-          <a href="#" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-      </div>
-      <!-- ./col -->
-      <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-danger">
-          <div class="inner">
-            <h3>65</h3>
-
-            <p><?php echo lang('dashboard_unique_visitor'); ?></p>
-          </div>
-          <div class="icon">
-            <i class="ion ion-pie-graph"></i>
-          </div>
-          <a href="#" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-      </div>
-      <!-- ./col -->
     </div>
     <!-- /.row -->
 
-    <!-- Info boxes -->
     <div class="row">
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box">
-          <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
-
-          <div class="info-box-content">
-            <span class="info-box-text">CPU Traffic</span>
-            <span class="info-box-number">
-              10
-              <small>%</small>
-            </span>
+      <div class="col-lg-12 col-12">
+        <div class="card card-outline card-primary">
+          <div class="card-header">
+            <h3 class="card-title">Last 5 Visits</h3>
           </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-          <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+          <div class="card-body p-0">
+            <table class="table mb-0 table-striped">
+              <thead>
+                <tr>
+                  <th>District</th>
+                  <th>Tehsil</th>
+                  <th>School</th>
+                  <th>Date</th>
+                  <th>Time</th>
 
-          <div class="info-box-content">
-            <span class="info-box-text">Likes</span>
-            <span class="info-box-number">41,410</span>
+                  <th>Visited By</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!empty($recent_visits)): ?>
+                  <?php foreach ($recent_visits as $rv): ?>
+                    <tr>
+                      <td><?php echo !empty($rv->district_name_en) ? $rv->district_name_en : '-'; ?></td>
+                      <td><?php echo !empty($rv->tehsil_name_en) ? $rv->tehsil_name_en : '-'; ?></td>
+                      <td><?php echo !empty($rv->school_code) ? $rv->school_code . ' - ' . $rv->school_name : $rv->school_name; ?></td>
+                      <td><?php echo !empty($rv->visit_date) ? date('Y-m-d', strtotime($rv->visit_date)) : '-'; ?></td>
+                      <td><?php echo !empty($rv->visit_time) ? date('H:i', strtotime($rv->visit_time)) : '-'; ?></td>
+
+                      <td><?php echo ((int) logged('role') === 3) ? 'Head of School' : (!empty($rv->visitor_name) ? $rv->visitor_name : '-'); ?></td>
+                      <td><a href="<?php echo url('school_visits/view/' . $rv->id); ?>" class="btn btn-sm btn-default">View</a></td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <tr>
+                    <td colspan="7" class="text-center">No visits yet</td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
           </div>
-          <!-- /.info-box-content -->
         </div>
-        <!-- /.info-box -->
       </div>
-      <!-- /.col -->
-
-      <!-- fix for small devices only -->
-      <div class="clearfix hidden-md-up"></div>
-
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-          <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
-          <div class="info-box-content">
-            <span class="info-box-text">Sales</span>
-            <span class="info-box-number">760</span>
-          </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-          <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
-          <div class="info-box-content">
-            <span class="info-box-text">New Members</span>
-            <span class="info-box-number">2,000</span>
-          </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
     </div>
-    <!-- /.row -->
-    <!-- Info boxes -->
-    <div class="row">
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box">
-          <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
-
-          <div class="info-box-content">
-            <span class="info-box-text">CPU Traffic</span>
-            <span class="info-box-number">
-              10
-              <small>%</small>
-            </span>
-          </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-          <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
-
-          <div class="info-box-content">
-            <span class="info-box-text">Likes</span>
-            <span class="info-box-number">41,410</span>
-          </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
-
-      <!-- fix for small devices only -->
-      <div class="clearfix hidden-md-up"></div>
-
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-          <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
-          <div class="info-box-content">
-            <span class="info-box-text">Sales</span>
-            <span class="info-box-number">760</span>
-          </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-          <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
-          <div class="info-box-content">
-            <span class="info-box-text">New Members</span>
-            <span class="info-box-number">2,000</span>
-          </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
-    </div>
-    <!-- /.row -->
 
   </div><!-- /.container-fluid -->
 </section>

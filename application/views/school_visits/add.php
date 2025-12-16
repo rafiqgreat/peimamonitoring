@@ -215,6 +215,52 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         </div>
       </div>
 
+      <div class="card card-outline card-secondary mb-3">
+        <div class="card-header">
+          <h3 class="card-title">Dangerous Building</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Dangerous building exists?</label>
+            <select name="dangerous_exists" id="dangerous-exists" class="form-control">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+
+          <div id="dangerous-wrap" class="d-none">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dangerous-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Photo</th>
+                    <th style="width:70px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <select name="dangerous_type[]" class="form-control">
+                        <option value="Rooms">Rooms</option>
+                        <option value="Washrooms">Washrooms</option>
+                        <option value="Wall">Wall</option>
+                        <option value="Gate">Gate</option>
+                        <option value="Branda">Branda</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </td>
+                    <td><input type="file" name="dangerous_photo[]" accept="image/*" class="form-control-file" /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger dangerous-remove">&times;</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <button type="button" class="btn btn-sm btn-primary" id="dangerous-add-row"><i class="fa fa-plus"></i> Add Building</button>
+          </div>
+        </div>
+      </div>
+
 
       <div class="card card-outline card-secondary mb-3">
         <div class="card-header">
@@ -611,6 +657,28 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
     $('#students-enrollment-sis, #students-present').on('input', recalcStudentsGap);
     recalcStudentsGap();
+
+    function toggleDangerous() {
+      const show = $('#dangerous-exists').val() === '1';
+      $('#dangerous-wrap').toggleClass('d-none', !show);
+    }
+
+    $('#dangerous-exists').on('change', toggleDangerous);
+    toggleDangerous();
+
+    $('#dangerous-add-row').on('click', function() {
+      const row = $('#dangerous-table tbody tr:first').clone();
+      row.find('select').val('Rooms');
+      row.find('input[type="file"]').val('');
+      $('#dangerous-table tbody').append(row);
+    });
+
+    $('#dangerous-table').on('click', '.dangerous-remove', function() {
+      const rows = $('#dangerous-table tbody tr').length;
+      if (rows > 1) {
+        $(this).closest('tr').remove();
+      }
+    });
 
   })
 </script>

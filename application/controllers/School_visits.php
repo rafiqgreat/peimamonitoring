@@ -42,6 +42,7 @@ class School_visits extends MY_Controller
 		$this->load->model('districts_model');
 		$this->load->model('tehsils_model');
 		$this->load->model('school_visit_photos_model');
+		$this->load->model('school_visit_dangerous_photos_model');
 		$this->load->library('uploadlib');
 
 		$this->page_data['page']->title = 'School Visit Reports';
@@ -336,6 +337,68 @@ class School_visits extends MY_Controller
 		]);
 	}
 
+	private function save_dangerous_photos($visit_id, $school_code)
+	{
+		$exists = post('dangerous_exists') === '1';
+		$types = $this->input->post('dangerous_type');
+
+		// clear existing entries
+		$existing = $this->school_visit_dangerous_photos_model->getByWhere(['visit_id' => $visit_id]);
+		foreach ($existing as $old) {
+			if (!empty($old->file_name) && file_exists(FCPATH . 'uploads/' . $old->file_name)) {
+				@unlink(FCPATH . 'uploads/' . $old->file_name);
+			}
+		}
+		$this->school_visit_dangerous_photos_model->delete_by_visit($visit_id);
+
+		if (!$exists || empty($types) || !isset($_FILES['dangerous_photo'])) {
+			return;
+		}
+
+		$school_code = trim($school_code) !== '' ? $school_code : 'unknown';
+		$base_dir = FCPATH . 'uploads/' . $school_code . '/' . $visit_id . '/dangerous';
+		$this->ensure_upload_paths(FCPATH . 'uploads');
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code);
+		$this->ensure_upload_paths(FCPATH . 'uploads/' . $school_code . '/' . $visit_id);
+		$this->ensure_upload_paths($base_dir);
+
+		$files = $_FILES['dangerous_photo'];
+		$count = count($types);
+
+		for ($i = 0; $i < $count; $i++) {
+			if (!isset($files['name'][$i]) || $files['error'][$i] === 4) {
+				continue;
+			}
+
+			$_FILES['single_dangerous']['name'] = $files['name'][$i];
+			$_FILES['single_dangerous']['type'] = $files['type'][$i];
+			$_FILES['single_dangerous']['tmp_name'] = $files['tmp_name'][$i];
+			$_FILES['single_dangerous']['error'] = $files['error'][$i];
+			$_FILES['single_dangerous']['size'] = $files['size'][$i];
+
+			$this->uploadlib->initialize([
+				'upload_path' => './uploads/' . $school_code . '/' . $visit_id . '/dangerous',
+				'allowed_types' => 'gif|jpg|png|jpeg',
+				'overwrite' => false,
+				'remove_spaces' => true,
+			]);
+
+			// Path already configured above, keep empty here to avoid duplicating the path.
+			$upload = $this->uploadlib->uploadImage('single_dangerous', '');
+			if (!$upload['status']) {
+				continue;
+			}
+
+			$file_name = $upload['data']['file_name'];
+			$this->school_visit_dangerous_photos_model->create([
+				'visit_id' => $visit_id,
+				'building_type' => isset($types[$i]) ? $types[$i] : '',
+				'file_name' => $school_code . '/' . $visit_id . '/dangerous/' . $file_name,
+				'created_at' => date('Y-m-d H:i:s'),
+			]);
+		}
+	}
+
 	private function save_head_photo($visit_id, $school_code, $field_name = 'head_photo')
 	{
 		if (!isset($_FILES[$field_name]) || (int) $_FILES[$field_name]['error'] === 4) {
@@ -489,12 +552,12 @@ class School_visits extends MY_Controller
 			'students_enrollment_register' => post('students_enrollment_register') !== '' ? (int) post('students_enrollment_register') : null,
 			'students_present' => post('students_present') !== '' ? (int) post('students_present') : null,
 			'students_enrollment_gap' => (post('students_enrollment_sis') !== '' && post('students_present') !== '') ? ((int) post('students_enrollment_sis') - (int) post('students_present')) : null,
+			'dangerous_exists' => post('dangerous_exists') === '1' ? 1 : 0,
 			'head_name' => post('head_name'),
 			'head_gender' => post('head_gender'),
 			'head_contact' => post('head_contact'),
 			'head_whatsapp' => post('head_whatsapp'),
 			'head_email' => post('head_email'),
-			'students_by_class' => post('students_by_class'),
 			'remarks' => post('remarks'),
 			'boundary_wall_main_gate' => post('boundary_wall_main_gate') ? 1 : 0,
 			'drinking_water_available' => post('drinking_water_available') ? 1 : 0,
@@ -518,6 +581,13 @@ class School_visits extends MY_Controller
 		];
 
 		$id = $this->school_visit_reports_model->create($data);
+		$dbErr = $this->db->error();
+		if (!$id || (!empty($dbErr['message']))) {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Save failed: ' . $dbErr['message']);
+			redirect('school_visits/add');
+			return;
+		}
 
 		$school = $this->schools_model->getById($data['school_id']);
 		$school_code = !empty($school) ? $school->school_code : 'unknown';
@@ -525,6 +595,7 @@ class School_visits extends MY_Controller
 		$this->save_all_photos($id, $school_code);
 		$this->save_head_photo($id, $school_code);
 		$this->save_gate_photo($id, $school_code);
+		$this->save_dangerous_photos($id, $school_code);
 
 		$this->activity_model->add("School visit #$id Created by User: #" . logged('id'), logged('id'));
 
@@ -591,12 +662,12 @@ class School_visits extends MY_Controller
 			'students_enrollment_register' => post('students_enrollment_register') !== '' ? (int) post('students_enrollment_register') : null,
 			'students_present' => post('students_present') !== '' ? (int) post('students_present') : null,
 			'students_enrollment_gap' => (post('students_enrollment_sis') !== '' && post('students_present') !== '') ? ((int) post('students_enrollment_sis') - (int) post('students_present')) : null,
+			'dangerous_exists' => post('dangerous_exists') === '1' ? 1 : 0,
 			'head_name' => post('head_name'),
 			'head_gender' => post('head_gender'),
 			'head_contact' => post('head_contact'),
 			'head_whatsapp' => post('head_whatsapp'),
 			'head_email' => post('head_email'),
-			'students_by_class' => post('students_by_class'),
 			'remarks' => post('remarks'),
 			'boundary_wall_main_gate' => post('boundary_wall_main_gate') ? 1 : 0,
 			'drinking_water_available' => post('drinking_water_available') ? 1 : 0,
@@ -619,6 +690,13 @@ class School_visits extends MY_Controller
 		];
 
 		$this->school_visit_reports_model->update($id, $data);
+		$dbErr = $this->db->error();
+		if (!empty($dbErr['message'])) {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Update failed: ' . $dbErr['message']);
+			redirect('school_visits/edit/' . $id);
+			return;
+		}
 
 		$school = $this->schools_model->getById($school_id);
 		$school_code = !empty($school) ? $school->school_code : 'unknown';
@@ -626,6 +704,7 @@ class School_visits extends MY_Controller
 		$this->save_all_photos($id, $school_code);
 		$this->save_head_photo($id, $school_code);
 		$this->save_gate_photo($id, $school_code);
+		$this->save_dangerous_photos($id, $school_code);
 
 		$this->activity_model->add("School visit #$id Updated by User: #" . logged('id'), logged('id'));
 
@@ -686,6 +765,7 @@ class School_visits extends MY_Controller
 			$photo_map[$photo->checklist_key] = $photo;
 		}
 		$this->page_data['photos'] = $photo_map;
+		$this->page_data['dangerous_photos'] = $this->school_visit_dangerous_photos_model->getByWhere(['visit_id' => $id]);
 		$this->load->view('school_visits/view', $this->page_data);
 	}
 

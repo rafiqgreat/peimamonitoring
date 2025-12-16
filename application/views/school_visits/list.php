@@ -64,7 +64,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                   <span class="badge badge-secondary"><?php echo lang('school_status_closed') ?></span>
                 <?php endif ?>
               </td>
-              <td><?php echo $row->visitor_name ?></td>
+              <td><?php echo ((int) logged('role') === 3) ? 'Head of School' : $row->visitor_name ?></td>
               <td>
                 <?php if (logged('role') == 1 || hasPermissions('school_visits_view')): ?>
                   <a href="<?php echo url('school_visits/view/'.$row->id) ?>" class="btn btn-sm btn-default" title="<?php echo lang('view_school_visit') ?>" data-toggle="tooltip"><i class="fas fa-eye"></i></a>

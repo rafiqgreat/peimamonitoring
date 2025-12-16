@@ -4,6 +4,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <ul class="nav nav-pills nav-sidebar flex-column nav-legacy" data-widget="treeview" role="menu" data-accordion="false">
 
+  <li class="nav-header text-center">
+    <div class="py-3">
+      <img src="<?php echo base_url('assets/img/peima-logo.png'); ?>" alt="PEIMA Logo" style="max-width:120px; height:auto;">
+    </div>
+  </li>
 
   <li class="nav-item">
     <a href="<?php echo url('dashboard') ?>" class="nav-link <?php echo ($page->menu == 'dashboard') ? 'active' : '' ?>">
