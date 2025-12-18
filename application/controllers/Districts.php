@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Districts extends MY_Controller {
+class Districts extends MY_Controller
+{
 
 	private $permissions = [
 		'districts_list' => 'Districts List',
@@ -13,6 +14,7 @@ class Districts extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+
 
 		$this->load->model('districts_model');
 
@@ -90,11 +92,11 @@ class Districts extends MY_Controller {
 
 		$id = $this->districts_model->create($data);
 
-		$this->activity_model->add("District #$id Created by User: #".logged('id'), logged('id'));
+		$this->activity_model->add("District #$id Created by User: #" . logged('id'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'District Created Successfully');
-		
+
 		redirect('districts');
 	}
 
@@ -143,11 +145,11 @@ class Districts extends MY_Controller {
 
 		$this->districts_model->update($id, $data);
 
-		$this->activity_model->add("District #$id Updated by User: #".logged('id'), logged('id'));
+		$this->activity_model->add("District #$id Updated by User: #" . logged('id'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'District Updated Successfully');
-		
+
 		redirect('districts');
 	}
 
@@ -166,14 +168,13 @@ class Districts extends MY_Controller {
 
 		$this->districts_model->delete($id);
 
-		$this->activity_model->add("District #$id Deleted by User: #".logged('id'), logged('id'));
+		$this->activity_model->add("District #$id Deleted by User: #" . logged('id'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'District Deleted Successfully');
-		
+
 		redirect('districts');
 	}
-
 }
 
 /* End of file Districts.php */

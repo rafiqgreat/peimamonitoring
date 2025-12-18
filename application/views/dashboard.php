@@ -39,6 +39,16 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
       </div>
     <?php endif; ?>
 
+    <div class="row mb-3">
+      <div class="col-12 text-right">
+        <?php if (logged('role') == 1 || hasPermissions('school_visits_add')): ?>
+          <a href="<?php echo url('school_visits/add'); ?>" class="btn btn-primary btn-sm">
+            <i class="fa fa-plus"></i> Add School Visit
+          </a>
+        <?php endif; ?>
+      </div>
+    </div>
+
     <!-- Small boxes (Stat box) -->
     <div class="row">
       <div class="col-lg-3 col-6">
@@ -53,8 +63,23 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <i class="ion ion-clipboard"></i>
           </div>
           <a href="<?php echo url('school_visits'); ?>" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
+          <a href="<?php echo url('school_visits'); ?>" class="btn btn-light btn-sm w-100 d-lg-none mt-2">View Visits</a>
         </div>
       </div>
+      <?php if ((int) logged('role') == 3): ?>
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3><a href="<?php echo url('school_visits/add'); ?>" style="color:#ffffff;">Add Inspection</a></h3>
+              <p>School Licensee / Heads must send</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-alert-circled"></i>
+            </div>
+            <a href="<?php echo url('school_visits/add'); ?>" class="small-box-footer"><?php echo lang('dashboard_more_info'); ?><i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+      <?php endif; ?>
       <?php if ((int) logged('role') !== 3): ?>
         <div class="col-lg-3 col-6">
           <div class="small-box bg-success">

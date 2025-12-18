@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,5 +18,25 @@
   <link rel="stylesheet" href="<?php echo $assets ?>/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <style>
+    /* Login background with dim overlay */
+    body.login-page {
+      background: #0a0a0a url('<?php echo base_url('assets/img/bg-monitoring.jpg'); ?>') center center / cover no-repeat fixed;
+      position: relative;
+    }
+    body.login-page:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 0;
+    }
+    body.login-page .login-box,
+    body.login-page .login-logo {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
 </head>
-<body class="hold-transition <?php echo !isset($body_classes)?'login-page':$body_classes ?>">
+
+<body class="hold-transition <?php echo !isset($body_classes) ? 'login-page' : $body_classes ?>">
