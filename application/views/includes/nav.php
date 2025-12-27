@@ -92,6 +92,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <p><?php echo lang('districts') ?></p>
           </a>
         </li>
+        <?php if ((int) logged('role') === 1): ?>
+          <li class="nav-item">
+            <a href="<?php echo url('districts/report_summary') ?>" class="nav-link <?php echo ($this->uri->segment(1) === 'districts' && $this->uri->segment(2) === 'report_summary') ? 'active' : '' ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>District Report Summary</p>
+            </a>
+          </li>
+        <?php endif; ?>
         <li class="nav-item">
           <a href="<?php echo url('tehsils') ?>" class="nav-link <?php echo ($page->submenu == 'tehsils' || $this->uri->segment(1) === 'tehsils') ? 'active' : '' ?>">
             <i class="far fa-circle nav-icon"></i>
@@ -131,6 +139,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <p><?php echo ((int) logged('role') === 3) ? 'Add' : lang('add_school_visit'); ?></p>
           </a>
         </li>
+        <?php if ((int) logged('role') === 1): ?>
+          <li class="nav-item">
+            <a href="<?php echo url('school_visits/heads_information') ?>" class="nav-link <?php echo ($this->uri->segment(1) === 'school_visits' && $this->uri->segment(2) === 'heads_information') ? 'active' : '' ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Heads Information</p>
+            </a>
+          </li>
+        <?php endif; ?>
       </ul>
     </li>
   <?php endif ?>

@@ -175,6 +175,107 @@ class Districts extends MY_Controller
 
 		redirect('districts');
 	}
+
+	/**
+	 * District-level summary of school visit reports.
+	 * Admin only (role 1).
+	 */
+	public function report_summary()
+	{
+		if ((int) logged('role') !== 1) {
+			show_error('Not allowed', 403);
+			return;
+		}
+
+		// Ensure required tables exist.
+		$has_districts = $this->db->table_exists('districts');
+		$has_schools = $this->db->table_exists('schools');
+		$has_visits = $this->db->table_exists('school_visit_reports');
+
+		if (!$has_districts || !$has_schools) {
+			$this->page_data['summary'] = [];
+			$this->page_data['totals'] = [
+				'total_schools' => 0,
+				'visited_schools' => 0,
+				'reports_received' => 0,
+				'pending_schools' => 0,
+			];
+			$this->load->view('districts/report_summary', $this->page_data);
+			return;
+		}
+
+		$this->db->select('districts.district_id, districts.district_name_en');
+		$this->db->select('COUNT(DISTINCT schools.school_id) as total_schools', false);
+		$has_dangerous_flag = $has_visits && $this->db->field_exists('dangerous_exists', 'school_visit_reports');
+		$has_flood_flag = $has_visits && $this->db->field_exists('flood_exists', 'school_visit_reports');
+
+		if ($has_visits) {
+			$this->db->select('COUNT(school_visit_reports.id) as reports_received', false);
+			if ($has_dangerous_flag) {
+				$this->db->select('COUNT(DISTINCT CASE WHEN school_visit_reports.dangerous_exists = 1 THEN school_visit_reports.school_id END) as dangerous_schools', false);
+			} else {
+				$this->db->select('0 as dangerous_schools', false);
+			}
+			if ($has_flood_flag) {
+				$this->db->select('COUNT(DISTINCT CASE WHEN school_visit_reports.flood_exists = 1 THEN school_visit_reports.school_id END) as flood_schools', false);
+			} else {
+				$this->db->select('0 as flood_schools', false);
+			}
+		} else {
+			$this->db->select('0 as reports_received', false);
+			$this->db->select('0 as dangerous_schools', false);
+			$this->db->select('0 as flood_schools', false);
+		}
+		$this->db->from('districts');
+		$this->db->join('schools', 'schools.school_district_id = districts.district_id', 'left');
+		if ($has_visits) {
+			$this->db->join('school_visit_reports', 'school_visit_reports.school_id = schools.school_id', 'left');
+		}
+		$this->db->group_by('districts.district_id, districts.district_name_en');
+		$this->db->order_by('districts.district_sort', 'asc');
+		$this->db->order_by('districts.district_name_en', 'asc');
+
+		$db_debug = $this->db->db_debug;
+		$this->db->db_debug = false;
+		$query = $this->db->get();
+		$error = $this->db->error();
+		$this->db->db_debug = $db_debug;
+
+		$summary = [];
+		$totals = [
+			'total_schools' => 0,
+			'reports_received' => 0,
+			'pending_schools' => 0,
+			'dangerous_schools' => 0,
+			'flood_schools' => 0,
+		];
+
+		if (empty($error['message']) && $query) {
+			foreach ($query->result() as $row) {
+				$visited_schools = isset($row->reports_received) && $row->reports_received > 0 ? (int) $row->reports_received : 0;
+				$pending = ((int) $row->total_schools) - $visited_schools;
+				$pending = $pending > 0 ? $pending : 0;
+				$summary[] = [
+					'district_name' => $row->district_name_en ?: 'Unknown',
+					'total_schools' => (int) $row->total_schools,
+					'reports_received' => (int) $row->reports_received,
+					'dangerous_schools' => isset($row->dangerous_schools) ? (int) $row->dangerous_schools : 0,
+					'flood_schools' => isset($row->flood_schools) ? (int) $row->flood_schools : 0,
+					'pending_schools' => $pending,
+				];
+
+				$totals['total_schools'] += (int) $row->total_schools;
+				$totals['reports_received'] += (int) $row->reports_received;
+				$totals['dangerous_schools'] += isset($row->dangerous_schools) ? (int) $row->dangerous_schools : 0;
+				$totals['flood_schools'] += isset($row->flood_schools) ? (int) $row->flood_schools : 0;
+				$totals['pending_schools'] += $pending;
+			}
+		}
+
+		$this->page_data['summary'] = $summary;
+		$this->page_data['totals'] = $totals;
+		$this->load->view('districts/report_summary', $this->page_data);
+	}
 }
 
 /* End of file Districts.php */

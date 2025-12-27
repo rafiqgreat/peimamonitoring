@@ -122,51 +122,53 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     </div>
     <!-- /.row -->
 
-    <div class="row">
-      <div class="col-lg-12 col-12">
-        <div class="card card-outline card-primary">
-          <div class="card-header">
-            <h3 class="card-title">Last 5 Visits</h3>
-          </div>
-          <div class="card-body p-0">
-            <table class="table mb-0 table-striped">
-              <thead>
-                <tr>
-                  <th>District</th>
-                  <th>Tehsil</th>
-                  <th>School</th>
-                  <th>Date</th>
-                  <th>Time</th>
-
-                  <th>Visited By</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if (!empty($recent_visits)): ?>
-                  <?php foreach ($recent_visits as $rv): ?>
-                    <tr>
-                      <td><?php echo !empty($rv->district_name_en) ? $rv->district_name_en : '-'; ?></td>
-                      <td><?php echo !empty($rv->tehsil_name_en) ? $rv->tehsil_name_en : '-'; ?></td>
-                      <td><?php echo !empty($rv->school_code) ? $rv->school_code . ' - ' . $rv->school_name : $rv->school_name; ?></td>
-                      <td><?php echo !empty($rv->visit_date) ? date('Y-m-d', strtotime($rv->visit_date)) : '-'; ?></td>
-                      <td><?php echo !empty($rv->visit_time) ? date('H:i', strtotime($rv->visit_time)) : '-'; ?></td>
-
-                      <td><?php echo ((int) logged('role') === 3) ? 'Head of School' : (!empty($rv->visitor_name) ? $rv->visitor_name : '-'); ?></td>
-                      <td><a href="<?php echo url('school_visits/view/' . $rv->id); ?>" class="btn btn-sm btn-default">View</a></td>
-                    </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
+    <?php if ((int) logged('role') !== 3): ?>
+      <div class="row">
+        <div class="col-lg-12 col-12">
+          <div class="card card-outline card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Last 5 Visits</h3>
+            </div>
+            <div class="card-body p-0">
+              <table class="table mb-0 table-striped">
+                <thead>
                   <tr>
-                    <td colspan="7" class="text-center">No visits yet</td>
+                    <th>District</th>
+                    <th>Tehsil</th>
+                    <th>School</th>
+                    <th>Date</th>
+                    <th>Time</th>
+
+                    <th>Visited By</th>
+                    <th>Action</th>
                   </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  <?php if (!empty($recent_visits)): ?>
+                    <?php foreach ($recent_visits as $rv): ?>
+                      <tr>
+                        <td><?php echo !empty($rv->district_name_en) ? $rv->district_name_en : '-'; ?></td>
+                        <td><?php echo !empty($rv->tehsil_name_en) ? $rv->tehsil_name_en : '-'; ?></td>
+                        <td><?php echo !empty($rv->school_code) ? $rv->school_code . ' - ' . $rv->school_name : $rv->school_name; ?></td>
+                        <td><?php echo !empty($rv->visit_date) ? date('Y-m-d', strtotime($rv->visit_date)) : '-'; ?></td>
+                        <td><?php echo !empty($rv->visit_time) ? date('H:i', strtotime($rv->visit_time)) : '-'; ?></td>
+
+                        <td><?php echo ((int) logged('role') === 3) ? 'Head of School' : (!empty($rv->visitor_name) ? $rv->visitor_name : '-'); ?></td>
+                        <td><a href="<?php echo url('school_visits/view/' . $rv->id); ?>" class="btn btn-sm btn-default">View</a></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <tr>
+                      <td colspan="7" class="text-center">No visits yet</td>
+                    </tr>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    <?php endif; ?>
 
   </div><!-- /.container-fluid -->
 </section>

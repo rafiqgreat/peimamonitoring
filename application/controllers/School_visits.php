@@ -894,6 +894,80 @@ class School_visits extends MY_Controller
 
 		redirect('school_visits');
 	}
+
+	/**
+	 * Heads Information list (latest visit per school).
+	 * Admin only (role 1).
+	 */
+	public function heads_information()
+	{
+		if ((int) logged('role') !== 1) {
+			show_error('Not allowed', 403);
+			return;
+		}
+
+		if (!$this->db->table_exists('school_visit_reports')) {
+			$this->page_data['heads'] = [];
+			$this->load->view('school_visits/heads_information', $this->page_data);
+			return;
+		}
+
+		// Pagination setup
+		$page = (int) $this->input->get('page');
+		$page = $page > 0 ? $page : 1;
+		$per_page = 25;
+		$offset = ($page - 1) * $per_page;
+
+		$has_districts = $this->db->table_exists('districts');
+		$has_tehsils = $this->db->table_exists('tehsils');
+
+		$select = [
+			'school_visit_reports.id',
+			'school_visit_reports.school_id',
+			'school_visit_reports.head_name',
+			'school_visit_reports.head_contact',
+			'school_visit_reports.head_email',
+			'school_visit_reports.head_photo',
+			'school_visit_reports.visit_date',
+			'schools.school_code',
+			'schools.school_name',
+		];
+		$select[] = $has_districts ? 'districts.district_name_en' : 'NULL as district_name_en';
+		$select[] = $has_tehsils ? 'tehsils.tehsil_name_en' : 'NULL as tehsil_name_en';
+
+		// Count total distinct schools with at least one visit
+		$this->db->from('school_visit_reports');
+		$this->db->select('COUNT(DISTINCT school_visit_reports.school_id) as cnt', false);
+		$total_result = $this->db->get()->row();
+		$total_schools = $total_result ? (int) $total_result->cnt : 0;
+
+		// Fetch latest visit per school with pagination using subquery
+		$this->db->select(implode(', ', $select));
+		$this->db->from('school_visit_reports');
+		$this->db->join('schools', 'schools.school_id = school_visit_reports.school_id', 'left');
+		if ($has_districts) {
+			$this->db->join('districts', 'districts.district_id = schools.school_district_id', 'left');
+		}
+		if ($has_tehsils) {
+			$this->db->join('tehsils', 'tehsils.tehsil_id = schools.school_tehsil_id', 'left');
+		}
+		// Keep only latest visit per school_id
+		$this->db->where('school_visit_reports.id IN (SELECT MAX(id) FROM school_visit_reports GROUP BY school_id)', null, false);
+		$this->db->order_by('districts.district_name_en', 'asc');
+		$this->db->order_by('schools.school_name', 'asc');
+		$this->db->limit($per_page, $offset);
+
+		$this->page_data['heads'] = $this->db->get()->result();
+		$this->page_data['pagination'] = [
+			'page' => $page,
+			'per_page' => $per_page,
+			'total' => $total_schools,
+			'has_prev' => $page > 1,
+			'has_next' => ($offset + $per_page) < $total_schools,
+		];
+
+		$this->load->view('school_visits/heads_information', $this->page_data);
+	}
 }
 
 /* End of file School_visits.php */

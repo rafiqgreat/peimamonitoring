@@ -70,7 +70,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
               </td>
               <td><?php echo ((int) logged('role') === 3) ? 'Head of School' : $row->visitor_name ?></td>
               <td>
-                <?php if (logged('role') == 1 || hasPermissions('school_visits_view')): ?>
+                <?php if ((int) logged('role') !== 3 && (logged('role') == 1 || hasPermissions('school_visits_view'))): ?>
                   <a href="<?php echo url('school_visits/view/'.$row->id) ?>" class="btn btn-sm btn-default" title="<?php echo lang('view_school_visit') ?>" data-toggle="tooltip"><i class="fas fa-eye"></i></a>
                 <?php endif ?>
                 <?php if (logged('role') == 1 || hasPermissions('school_visits_edit')): ?>
